@@ -2,7 +2,7 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "project.h"
 
-uint8_t playbuffer[4][111];
+uint8_t playbuffer[4][96];
 
 void screen_clear(void) {
 	int i;
@@ -20,7 +20,7 @@ void screen_clear(void) {
 		
 		i = 0;
 			
-		for(;i<1;i++) {
+		for(;i<128;i++) {
 			spi_send_recv(0);
 		}
 	
@@ -33,7 +33,7 @@ void playbuffer_clear(void) {
 	
 	for(j = 0; j < 4; j++) {
 		
-		for(i = 0; i < 112; i++) {
+		for(i = 0; i < 96; i++) {
 			playbuffer[j][i] = 0;
 			
 		}
@@ -42,7 +42,7 @@ void playbuffer_clear(void) {
 	
 }
 
-void play_xy_update() {	
+void play_xy_update(void) {	
 	int i;
 	int j;
 	
@@ -53,9 +53,12 @@ void play_xy_update() {
 		spi_send_recv(j);	// row 0, 1, 2, 3
 		spi_send_recv(0x0);
 		spi_send_recv(0x11);
+		//spi_send_recv(0x21);
+		//spi_send_recv(16);
+		//spi_send_recv(111);
 		DISPLAY_CHANGE_TO_DATA_MODE;
 		
-		for(i = 0; i < 112; i++) {
+		for(i = 0; i < 96; i++) {
 			spi_send_recv(playbuffer[j][i]);
 			
 		}
@@ -73,9 +76,9 @@ void play_xy(int x, int y) {
 
 void playing_field_init(void) {
 	int i;
-	for(i=0;i<128;i++) {
-		screen_xy(i,0);	
-		screen_xy(i,31);
+	for(i=0;i<96;i++) {
+		play_xy(i,0);	
+		play_xy(i,31);
 	}
-	screen_xy_update();
+	play_xy_update();
 }

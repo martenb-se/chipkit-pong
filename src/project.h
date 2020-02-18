@@ -25,6 +25,6 @@ extern char textbuffer[4][16];
 void screen_clear(void);
 void playbuffer_clear(void);
 void play_xy(int x, int y);
-extern uint8_t playbuffer[4][111];
+extern uint8_t playbuffer[4][96];
 
 void playing_field_init(void);
