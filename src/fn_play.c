@@ -1,3 +1,7 @@
+#include <stdint.h>   /* Declarations of uint_32 and the like */
+#include <pic32mx.h>  /* Declarations of system-specific addresses etc */
+#include "project.h"
+
 uint8_t playbuffer[4][111];
 
 void screen_clear(void) {

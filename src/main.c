@@ -100,6 +100,7 @@ int main()
 
 	// Test XY
 	screen_clear();
+	playing_field_init();
 
 	//for(i = 0; i < 31; i++)
 	//	screen_xy(0, i);
