@@ -32,50 +32,7 @@ void display_init(void) {
 	spi_send_recv(0xAF);
 }
 
-void screen_clear(void) {
-	int i;
-	int j = 0;
 
-	// Clear screen
-	for(j;j<4;j++) {
-		
-		DISPLAY_CHANGE_TO_COMMAND_MODE;
-		spi_send_recv(0x22); 
-		spi_send_recv(j);	// row 0, 1, 2, 3
-		spi_send_recv(0x0);
-		spi_send_recv(0x10);
-		DISPLAY_CHANGE_TO_DATA_MODE;
-		
-		i = 0;
-			
-		for(;i<128;i++) {
-			spi_send_recv(0);
-		}
-	
-	}	
-}
-
-void pixelbuffer_clear(void) {	
-	int i;
-	int j;
-	
-	for(j = 0; j < 4; j++) {
-		
-		for(i = 0; i < 128; i++) {
-			pixelbuffer[j][i] = 0;
-			
-		}
-		
-	}
-	
-}
-
-// Translate X Y to page and colum
-void screen_xy(int x, int y) {
-
-	pixelbuffer[y/8][x] = pixelbuffer[y/8][x] | (1 << y%8);
-	
-}
 
 uint8_t spi_send_recv(uint8_t data) {
 	while(!(SPI2STAT & 0x08));									// 0000 0000 0000 1000 = SPITBE (while SPITBE == 0)
@@ -123,28 +80,6 @@ void display_update(void) {
 				spi_send_recv(font[c*8 + k]);
 		}
 	}
-}
-
-void screen_xy_update() {	
-	int i;
-	int j;
-	
-	for(j = 0; j < 4; j++) {
-		
-		DISPLAY_CHANGE_TO_COMMAND_MODE;
-		spi_send_recv(0x22);
-		spi_send_recv(j);	// row 0, 1, 2, 3
-		spi_send_recv(0x0);
-		spi_send_recv(0x10);
-		DISPLAY_CHANGE_TO_DATA_MODE;
-		
-		for(i = 0; i < 128; i++) {
-			spi_send_recv(pixelbuffer[j][i]);
-			
-		}
-		
-	}
-	
 }
 
 void quicksleep(int cyc) {

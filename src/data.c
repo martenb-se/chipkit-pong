@@ -4,8 +4,6 @@
 
 char textbuffer[4][16];
 
-uint8_t pixelbuffer[4][127];
-
 const uint8_t const font[] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,

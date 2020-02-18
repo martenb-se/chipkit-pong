@@ -23,7 +23,8 @@ extern const uint8_t const font[128*8];
 extern char textbuffer[4][16];
 
 void screen_clear(void);
-void pixelbuffer_clear(void);
-void screen_xy(int x, int y);
+void playbuffer_clear(void);
+void play_xy(int x, int y);
+extern uint8_t playbuffer[4][111];
 
-extern uint8_t pixelbuffer[4][127];
+void playing_field_init(void);

@@ -155,51 +155,6 @@ int main()
 		quicksleep(1000);*/
 
 
-		pixelbuffer_clear();
-		// Player left
-		for(k = 0; k < 10; k++) {
-			screen_xy(1, k + (j-4));
-			screen_xy(2, k + (j-4));
-		}
-
-		// Player right
-		for(k = 0; k < 10; k++) {
-			screen_xy(126, k + (26-(j-4)));
-			screen_xy(125, k + (26-(j-4)));
-		}
-
-		// Ball
-		/*screen_xy(0 + i, 0 + j);
-		screen_xy(0 + i, 1 + j);
-		screen_xy(1 + i, 0 + j);
-		screen_xy(1 + i, 1 + j);
-		screen_xy_update();*/
-			pixelbuffer_clear();
-			int p;
-			for(p=0;p<9;p++)
-				screen_xy(0+i, p+j);
-			for(p=0;p<8;p++)
-				screen_xy(p+i, 8+j);
-			for(p=0;p<9;p++)
-				screen_xy(8+i, p+j);
-			for(p=0;p<8;p++)
-				screen_xy(p+i, 0+j);
-			screen_xy_update();
-
-		i++;
-		if(i < 32-8)
-			j++;
-		else if(i < 64-8*)
-			j--;
-		else if(i < 96-8*3)
-			j++;
-		if(i >= 128-8*3) {
-			i = 0;
-			j = 0;
-		}
-
-		quicksleep(100000);
-
 		//quicksleep(1000000);
 		//PORTESET = 1;
 		//quicksleep(1000000);
