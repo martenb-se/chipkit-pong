@@ -2,6 +2,11 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "project.h"
 
+char leftscorebuffer[4];
+char rightscorebuffer[4];
+int sc1 = 3;
+int sc2 = 0;
+
 void score_borders(void)
 {
   int j = 0;
@@ -14,7 +19,7 @@ void score_borders(void)
     spi_send_recv(j);
     spi_send_recv(0x0);
 
-      // left border
+    // left border
     spi_send_recv(0x21);
     spi_send_recv(0x0);
     spi_send_recv(0x15);
@@ -23,6 +28,7 @@ void score_borders(void)
     int i;
     for(i=0;i<16;i++)
     {
+      quicksleep(1000000/3);
       spi_send_recv(0xff);
     }
 
@@ -41,52 +47,86 @@ void score_borders(void)
     DISPLAY_CHANGE_TO_DATA_MODE;
     for(i=0;i<16;i++)
     {
+      quicksleep(1000000/3);
       spi_send_recv(0xff);
     }
   }
+}
 
-  void display_score(int line, char *s, char *t) {
-  	int i;
-  	if(line < 0 || line >= 4)
-  		return;
-  	if(!s)
-  		return;
-
-  	for(i = 0; i < 16; i++)
-  		if(*s) {
-  			textbuffer[line][i] = *s;
-  			s++;
-  		} else
-  			textbuffer[line][i] = ' ';
+void display_left_score(int *s)
+{
+	int i;
+	for(i = 0; i < 4; i++)
+  {
+			leftscorebuffer[i] = *s;
+			s++;
   }
+}
 
-  void display_update(void) {
-  	int i, j, k;
-  	int c;
-  	for(i = 0; i < 4; i++) {
-  		DISPLAY_CHANGE_TO_COMMAND_MODE;
-  		spi_send_recv(0x22);
-  		spi_send_recv(i);
-
-  		spi_send_recv(0x0);
-  		spi_send_recv(0x10);
-
-  		DISPLAY_CHANGE_TO_DATA_MODE;
-
-  		for(j = 0; j < 16; j++) {
-  			c = textbuffer[i][j];
-  			if(c & 0x80)
-  				continue;
-
-  			for(k = 0; k < 8; k++)
-  				spi_send_recv(font[c*8 + k]);
-  		}
-  	}
+void display_right_score(int *s)
+{
+	int i;
+	for(i = 0; i < 4; i++)
+  {
+			rightscorebuffer[i] = *s;
+			s++;
   }
+}
 
+void display_left_score_update(void)
+{
+	int i, j, k;
+	int c;
+	DISPLAY_CHANGE_TO_COMMAND_MODE;
+	spi_send_recv(0x22);
+	spi_send_recv(1);
+  spi_send_recv(0x0);
+  spi_send_recv(0x10);
 
+	DISPLAY_CHANGE_TO_DATA_MODE;
 
+	for(j = 0; j < 1; j++)
+  {
+		c = leftscorebuffer[j];
+		if(c & 0x80)
+			continue;
 
+		for(k = 0; k < 8; k++)
+    {
+      quicksleep(1000000/3);
+			spi_send_recv(font[(c+sc1)*8 + k]);
+    }
+	}
+  sc1++;
+  if(sc1 > 9)
+    sc1 = 0;
+}
 
+void display_right_score_update(void)
+{
+	int i, j, k;
+	int c;
+	DISPLAY_CHANGE_TO_COMMAND_MODE;
+	spi_send_recv(0x22);
+	spi_send_recv(1);
+  spi_send_recv(0x0);
+  spi_send_recv(0x1f);
 
+	DISPLAY_CHANGE_TO_DATA_MODE;
+
+	for(j = 0; j < 1; j++)
+  {
+		c = rightscorebuffer[j];
+		if(c & 0x80)
+			continue;
+
+		for(k = 0; k < 8; k++)
+    {
+      quicksleep(1000000/3);
+			spi_send_recv(font[(c+sc2)*8 + k]);
+    }
+	}
+  sc2++;
+  if(sc2 > 9)
+    sc2 = 0;
 }

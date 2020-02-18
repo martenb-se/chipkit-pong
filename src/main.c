@@ -3,7 +3,6 @@
 #include "project.h"
 
 
-
 int main()
 {
         /*
@@ -97,12 +96,22 @@ int main()
 
 	int i = 0;
 	int j = 0;
+	char leftscore[] = "0";
+	char rightscore[] = "0";
 
-	// Test XY
+	// test playfield and scores
 	screen_clear();
 	playing_field_init();
-	score_borders();
+	//score_borders();
+	while(1)
+	{
+		display_left_score(leftscore);
+		display_left_score_update();
+		display_right_score(rightscore);
+		display_right_score_update();		
+	}
 
+	// Test XY
 	//for(i = 0; i < 31; i++)
 	//	screen_xy(0, i);
 

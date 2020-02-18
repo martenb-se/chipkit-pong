@@ -21,6 +21,8 @@ void quicksleep(int cyc);
 extern const uint8_t const font[128*8];
 /* Declare text buffer for display output */
 extern char textbuffer[4][16];
+//extern char leftscorebuffer[4];
+//extern char rightscorebuffer[4];
 
 void screen_clear(void);
 void playbuffer_clear(void);
@@ -28,6 +30,3 @@ void play_xy(int x, int y);
 extern uint8_t playbuffer[4][96];
 
 void playing_field_init(void);
-
-extern char scoreleftbuffer[4][16];
-extern char scorerightbuffer[4][16];
