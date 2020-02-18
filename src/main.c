@@ -169,22 +169,31 @@ int main()
 		}
 
 		// Ball
-		screen_xy(0 + i, 0 + j);
+		/*screen_xy(0 + i, 0 + j);
 		screen_xy(0 + i, 1 + j);
 		screen_xy(1 + i, 0 + j);
 		screen_xy(1 + i, 1 + j);
-		screen_xy_update();
+		screen_xy_update();*/
+			pixelbuffer_clear();
+			int p;
+			for(p=0;p<9;p++)
+				screen_xy(0+i, p+j);
+			for(p=0;p<8;p++)
+				screen_xy(p+i, 8+j);
+			for(p=0;p<9;p++)
+				screen_xy(8+i, p+j);
+			for(p=0;p<8;p++)
+				screen_xy(p+i, 0+j);
+			screen_xy_update();
 
 		i++;
-		if(i < 30)
+		if(i < 32-8)
 			j++;
-		else if(i < 60)
+		else if(i < 64-8*)
 			j--;
-		else if(i < 94)
+		else if(i < 96-8*3)
 			j++;
-		else if(i < 126)
-			j--;
-		if(i >= 126) {
+		if(i >= 128-8*3) {
 			i = 0;
 			j = 0;
 		}
@@ -198,3 +207,4 @@ int main()
 
 	}
 }
+
