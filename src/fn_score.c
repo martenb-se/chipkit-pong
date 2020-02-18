@@ -2,7 +2,6 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "project.h"
 
-
 void score_borders(void)
 {
   for(j;j<4;j++)
