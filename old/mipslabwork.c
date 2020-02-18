@@ -41,6 +41,7 @@ void user_isr( void ) {
 			display_string( 3, textstring );
 			display_update();
 			tick( &mytime );
+			display_image(96, icon);
 		}
 		
 		// 3.F
@@ -137,4 +138,5 @@ void labwork( void ) {
 	prime = nextprime( prime );
 	display_string( 0, itoaconv( prime ) );
 	display_update();
+	display_image(96, icon);
 }

@@ -55,9 +55,9 @@ int main(void) {
 	SPI2CONSET = 0x8000;
 	
 	display_init();
-	display_string(0, "KTH/ICT lab");
-	display_string(1, "in Computer");
-	display_string(2, "Engineering");
+	display_string(0, "1234");
+	display_string(1, "2");
+	display_string(2, "11");
 	display_string(3, "Welcome!");
 	display_update();
 	
