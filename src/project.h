@@ -28,3 +28,6 @@ void play_xy(int x, int y);
 extern uint8_t playbuffer[4][96];
 
 void playing_field_init(void);
+
+extern char scoreleftbuffer[4][16];
+extern char scorerightbuffer[4][16];
