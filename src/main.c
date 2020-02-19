@@ -103,12 +103,12 @@ int main()
 	screen_clear();
 	playing_field_init();
 	//score_borders();
+	//display_left_score("0");
+	//display_right_score("0");
 	while(1)
 	{
-		display_left_score(leftscore);
 		display_left_score_update();
-		display_right_score(rightscore);
-		display_right_score_update();		
+		display_right_score_update();
 	}
 
 	// Test XY
