@@ -1,0 +1,6 @@
+# Ignore .deps
+.deps/
+# Ignore compiled files
+*.o
+*.elf
+*.hex
