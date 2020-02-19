@@ -6,7 +6,7 @@ uint8_t playbuffer[4][96];
 uint8_t player_left = 16;
 uint8_t player_right = 16;
 uint8_t player_ball[] = {48, 16};
-uint8_t player_height = 6;
+uint8_t player_height = 8;
 uint8_t ball_width = 2;
 uint8_t ball_height = 2;
 
@@ -86,31 +86,26 @@ void playing_field_init(void) {
 		play_xy(i,0);
 		play_xy(i,31);
 	}
-	play_xy_update();
 }
 
 void move_player_left(uint8_t rel_y) {
+	player_left += rel_y;
+	
 	// Inside bounds
-	if (player_left > player_height/2 && player_left < (96 - player_height/2))
-		player_left += rel_y;
-	// Make sure to stay in bounds
-	else if (player_left <= player_height/2)
-		player_left = player_height/2;
-	// Make sure to stay in bounds
-	else if (player_left >= (96 - player_height/2))
-		player_left = (96 - player_height/2);
+	if (player_left <= player_height/2 + 1)
+		player_left = player_height/2 + 1;
+	else if (player_left >= 31 - player_height/2)
+		player_left = 31 - player_height/2;
 }
 
 void move_player_right(uint8_t rel_y) {
+	player_right += rel_y;
+	
 	// Inside bounds
-	if (player_right > player_height/2 && player_right < (96 - player_height/2))
-		player_right += rel_y;
-	// Make sure to stay in bounds
-	else if (player_right <= player_height/2)
-		player_right = player_height/2;
-	// Make sure to stay in bounds
-	else if (player_right >= (96 - player_height/2))
-		player_right = (96 - player_height/2);
+	if (player_right <= player_height/2 + 1)
+		player_right = player_height/2 + 1;
+	else if (player_right >= 31 - player_height/2)
+		player_right = 31 - player_height/2;
 }
 
 void move_ball(uint8_t rel_x, uint8_t rel_y) {
@@ -119,8 +114,7 @@ void move_ball(uint8_t rel_x, uint8_t rel_y) {
 
 void check_player_moves(void) {
 	// Button inputs
-	int buttons;
-	buttons = ((PORTD >> 4) & 0xE) + ((PORTF >> 1) & 1);
+	int buttons = input_get_buttons();
 	
 	// Button 4 is pressed
 	if ((buttons >> 3) & 1) {
@@ -175,10 +169,17 @@ void draw_ball(void) {
 
 void playing_field_update(void) {
 	int i;
-	// Players
+	
+	// Clear playing field
+	playbuffer_clear();
+	
+	// Draw field
+	playing_field_init();
+	
+	// Draw players
 	draw_players();
 	
-	// Ball
+	// Draw ball
 	draw_ball();
 	
 	play_xy_update();

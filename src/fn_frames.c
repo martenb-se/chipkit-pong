@@ -38,11 +38,14 @@ void frame_update(void) {
 	
 	// Run every frame (every 0.01 seconds)
 	playing_field_update();
+		
+	// Run every 5 frames (every 0.1 seconds)
+	if (framecount%5 == 0) {
+		// Allow one pixel/0.05 seconds
+		check_player_moves();
 	
 	// Run every 10 frames (every 0.1 seconds)
-	if (framecount%10 == 0) {
-		// Allow one pixel/0.1 seconds
-		check_player_moves();
+	} else if (framecount%10 == 0) {
 	
 	// Run every 100 frames (every second)
 	} else if (framecount == 99) {

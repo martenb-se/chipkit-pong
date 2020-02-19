@@ -55,6 +55,8 @@ extern uint8_t playbuffer[4][96];								// Buffer for playing field pixels
 extern uint8_t player_left;											// Y-position for left player
 extern uint8_t player_right;										// Y-position for left player
 extern uint8_t player_ball[2];									// XY-position for the ball
+extern uint8_t player_ball_direction;						// Degrees for ball movement
+extern uint8_t player_ball_speed;								// Ball speed
 extern uint8_t player_height;
 extern uint8_t ball_width;
 extern uint8_t ball_height;
@@ -67,4 +69,5 @@ void move_player_right(uint8_t rel_y);					// Move right player relative Y-posit
 void move_ball(uint8_t rel_x, uint8_t rel_y);		// Move ball to relative XY-position
 void draw_players(void);												// Draw players on playing field
 void draw_ball(void);														// Draw ball on playing field
-void check_player_moves(void);
+void check_player_moves(void);									// Check input and move players
+void init_ball(void);														// Initiate ball movement
