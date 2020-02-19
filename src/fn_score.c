@@ -34,7 +34,6 @@ void display_left_score_update(void)
 			   spi_send_recv(font[((c+sc1%10))*8 + k]);
     }
 	}
-  quicksleep(1000000/4);
   sc1++;
 }
 
@@ -60,80 +59,10 @@ void display_right_score_update(void)
 		for(k = 0; k < 8; k++)
     {
       if(j == 0)
-        spi_send_recv(font[((c+sc1/10))*8 + k]);
+        spi_send_recv(font[((c+sc2/10))*8 + k]);
       else if(j == 1)
-			   spi_send_recv(font[((c+sc1%10))*8 + k]);
+			   spi_send_recv(font[((c+sc2%10))*8 + k]);
     }
 	}
-  quicksleep(1000000/4);
   sc2++;
 }
-
-
-void score_borders(void)
-{
-  int j = 0;
-  for(j;j<4;j++)
-  {
-    DISPLAY_CHANGE_TO_COMMAND_MODE;
-
-    // row 0-3
-    spi_send_recv(0x22);
-    spi_send_recv(j);
-    spi_send_recv(0x0);
-
-    // left border
-    spi_send_recv(0x21);
-    spi_send_recv(0x0);
-    spi_send_recv(0x15);
-
-    DISPLAY_CHANGE_TO_DATA_MODE;
-    int i;
-    for(i=0;i<16;i++)
-    {
-      quicksleep(1000000/3);
-      spi_send_recv(0xff);
-    }
-
-    DISPLAY_CHANGE_TO_COMMAND_MODE;
-
-    // row 0-3
-    spi_send_recv(0x22);
-    spi_send_recv(j);
-    spi_send_recv(0x0);
-
-    // right border
-    spi_send_recv(0x21);
-    spi_send_recv(112);
-    spi_send_recv(127);
-
-    DISPLAY_CHANGE_TO_DATA_MODE;
-    for(i=0;i<16;i++)
-    {
-      quicksleep(1000000/3);
-      spi_send_recv(0xff);
-    }
-  }
-}
-
-/*
-void display_left_score(int *s)
-{
-	int i;
-	for(i = 0; i < 4; i++)
-  {
-			leftscorebuffer[i] = *s;
-			s++;
-  }
-}
-
-void display_right_score(int *s)
-{
-	int i;
-	for(i = 0; i < 4; i++)
-  {
-			rightscorebuffer[i] = *s;
-			s++;
-  }
-}
-*/

@@ -3,6 +3,7 @@
 #include "project.h"
 
 uint8_t playbuffer[4][96];
+uint8_t player_left = 16;
 
 void screen_clear(void) {
 	int i;

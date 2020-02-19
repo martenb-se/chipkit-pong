@@ -88,10 +88,12 @@ void quicksleep(int cyc) {
 }
 
 void user_isr(void) {
-
+	// Timer 2: Frame updare
+	if((IFS(0) >> 8) & 1) {
+		IFSCLR(0) = 0x00000100;
+		
+		// Run frame updates
+		frame_update();
+	
+	}
 }
-
-// Play: Field
-
-
-// Play: Scoreboard

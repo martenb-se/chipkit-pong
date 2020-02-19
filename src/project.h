@@ -21,12 +21,30 @@ void quicksleep(int cyc);
 extern const uint8_t const font[128*8];
 /* Declare text buffer for display output */
 extern char textbuffer[4][16];
-//extern char leftscorebuffer[4];
-//extern char rightscorebuffer[4];
 
+// Clear whole screen
 void screen_clear(void);
-void playbuffer_clear(void);
-void play_xy(int x, int y);
-extern uint8_t playbuffer[4][96];
 
-void playing_field_init(void);
+// Frames
+void frame_init(void);
+void frame_update(void);
+
+// Scores
+extern char leftscorebuffer[2];
+extern char rightscorebuffer[2];
+extern int sc1;
+extern int sc2;
+void display_left_score_update(void);
+void display_right_score_update(void);
+
+// Playing
+extern uint8_t playbuffer[4][96];								// Buffer for playing field pixels
+extern uint8_t player_left;											// Y-position for left player
+extern uint8_t player_right;										// Y-position for left player
+extern uint8_t player_ball[2];									// XY-position for the ball
+void playbuffer_clear(void);										// Clear pixelbuffer for playing field
+void playing_field_init(void);	 								// Initiate playing field with borders
+void play_xy(int x, int y); 										// Draw x, y pixel on playing field
+void move_player_left(uint8_t rel_y);						// Move left player relative Y-position
+void move_player_right(uint8_t rel_y);					// Move right player relative Y-position
+void move_ball(uint8_t rel_x, uint8_t rel_y);		// Move ball to relative XY-position

@@ -48,128 +48,22 @@ int main()
 	SPI2CONSET = 0x8000;
 
 	display_init();
-	//display_image(96, icon);
-	//display_string( 1, "AAAAAAAA" );
-	//display_update();
 
-	// Testing
-	DISPLAY_CHANGE_TO_COMMAND_MODE;
-
-																							// https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf
-	spi_send_recv(0x22);												// 0010 0010 // pg. 31 - Set Page Address
-	spi_send_recv(0);														// Page start 0, 1, 2, 3 // 0000 0000
-
-	//spi_send_recv(96 & 0xF);										// Page end // 0110 0000 & 0000 1111 = 0000 0000
-	//spi_send_recv(0x10 | ((96 >> 4) & 0xF));		// Set Higher Column = 0110 (6) // 0001 0000 | ((0110 0000 >> 4) = 0000 0110) & 0000 1111 = 0001 0110
-
-	spi_send_recv(0x0);
-	spi_send_recv(0x10);
-
-	DISPLAY_CHANGE_TO_DATA_MODE;
-
-	/*spi_send_recv(0b10000000); // ~(255 = 1111 1111) = 0 (0000 0000)
-	spi_send_recv(0b01000000);
-	spi_send_recv(0b00100000);
-	spi_send_recv(0b00010000);
-	spi_send_recv(0b00001000);
-	spi_send_recv(0b00000100);
-	spi_send_recv(0b00000010);
-	spi_send_recv(0b00000001);
-
-	spi_send_recv(0b10000000);
-	spi_send_recv(0b01000000);
-	spi_send_recv(0b00100000);
-	spi_send_recv(0b00010000);
-	spi_send_recv(0b00001000);
-	spi_send_recv(0b00000100);
-	spi_send_recv(0b00000010);
-	spi_send_recv(0b00000001);
-
-	spi_send_recv(0b10000000);
-	spi_send_recv(0b01000000);
-	spi_send_recv(0b00100000);
-	spi_send_recv(0b00010000);
-	spi_send_recv(0b00001000);
-	spi_send_recv(0b00000100);
-	spi_send_recv(0b00000010);
-	spi_send_recv(0b00000001);*/
-
-	int i = 0;
-	int j = 0;
-	char leftscore[] = "0";
-	char rightscore[] = "0";
-
-	// test playfield and scores
+	// Clear screen on program start
 	screen_clear();
-	playing_field_init();
-	//score_borders();
-	//display_left_score("0");
-	//display_right_score("0");
+
+	// Initiation
+	// In game
+	frame_init(); // Enable timer for frames
+	playing_field_init(); // Initiate playing field
+	
+	// Enable interrupts
+	enable_interrupt();
+
 	while(1)
 	{
-		display_left_score_update();
-		display_right_score_update();
+		// Do nothing
+		quicksleep(10);
 	}
 
-	// Test XY
-	//for(i = 0; i < 31; i++)
-	//	screen_xy(0, i);
-
-	// Testing for input/output
-
-	/*display_string(1, "Test");
-	display_update();
-
-	// Upper connectors
-	// Set RF2 (0000 0000 0000 000X) to input
-	TRISFSET = 1 << 2;
-
-	// Set RF3 (0000 0000 0000 00X0) to output
-	TRISFCLR = 1 << 3;
-
-	// Lower
-	// Set RE0 (0000 0000 0000 000X) to output
-	TRISECLR = 1;*/
-
-
-	int k;
-
-	while(1) {
-		/*for(j;j<4;j++) {
-
-			DISPLAY_CHANGE_TO_COMMAND_MODE;
-			spi_send_recv(0x22);
-			spi_send_recv(j);	// row 0, 1, 2, 3
-			spi_send_recv(0x0);
-			spi_send_recv(0x10);
-			DISPLAY_CHANGE_TO_DATA_MODE;
-
-			i = 0;
-
-			for(;i<128;i++) {
-				spi_send_recv(~i & 0xFF);
-				//quicksleep(100000);
-			}
-
-		}*/
-
-
-		// Testing for input/output
-
-		/*if ((PORTF >> 2) & 1) {
-			display_string(1, "RF2");
-			display_update();
-		} else {
-			display_string(1, "-----");
-			display_update();
-		}
-		quicksleep(1000);*/
-
-
-		//quicksleep(1000000);
-		//PORTESET = 1;
-		//quicksleep(1000000);
-		//PORTECLR = 1;
-
-	}
 }
