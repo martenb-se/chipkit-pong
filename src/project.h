@@ -25,6 +25,10 @@ extern char textbuffer[4][16];
 // Clear whole screen
 void screen_clear(void);
 
+// Input
+void input_init(void);
+int input_get_buttons(void);
+
 // Frames
 void frame_init(void);
 void frame_update(void);
@@ -63,3 +67,4 @@ void move_player_right(uint8_t rel_y);					// Move right player relative Y-posit
 void move_ball(uint8_t rel_x, uint8_t rel_y);		// Move ball to relative XY-position
 void draw_players(void);												// Draw players on playing field
 void draw_ball(void);														// Draw ball on playing field
+void check_player_moves(void);

@@ -31,17 +31,18 @@ void frame_init(void) {
 	// Start timer
   //T2CONbits.ON = 1;
   T2CONSET = 0x8000; // Bit 15
+  
 }
 
 void frame_update(void) {
 	
 	// Run every frame (every 0.01 seconds)
-	
+	playing_field_update();
 	
 	// Run every 10 frames (every 0.1 seconds)
 	if (framecount%10 == 0) {
-		// ...
-		
+		// Allow one pixel/0.1 seconds
+		check_player_moves();
 	
 	// Run every 100 frames (every second)
 	} else if (framecount == 99) {
