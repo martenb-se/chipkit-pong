@@ -29,6 +29,15 @@ void screen_clear(void);
 void frame_init(void);
 void frame_update(void);
 
+// Menu
+void start_menu(void);
+extern char gametitle[16];
+extern char oneplayer[2];
+extern char twoplayer[2];
+extern char options[3];
+extern char credits[4];
+extern char exit[4];
+
 // Scores
 extern char leftscorebuffer[2];
 extern char rightscorebuffer[2];
