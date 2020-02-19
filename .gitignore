@@ -1,2 +1,2 @@
-# Ignore .dep
-.deps/
+# Ignore .src/deps
+.src/deps/
