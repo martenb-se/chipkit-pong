@@ -4,6 +4,8 @@
 
 uint8_t playbuffer[4][96];
 uint8_t player_left = 16;
+uint8_t player_right = 16;
+uint8_t player_ball[] = {48, 16};
 
 void screen_clear(void) {
 	int i;

@@ -48,3 +48,5 @@ void play_xy(int x, int y); 										// Draw x, y pixel on playing field
 void move_player_left(uint8_t rel_y);						// Move left player relative Y-position
 void move_player_right(uint8_t rel_y);					// Move right player relative Y-position
 void move_ball(uint8_t rel_x, uint8_t rel_y);		// Move ball to relative XY-position
+void draw_player_left(void);										// Draw left player on playing field
+void draw_player_right(void);										// Draw left player on playing field

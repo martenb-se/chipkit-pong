@@ -53,9 +53,12 @@ int main()
 	screen_clear();
 
 	// Initiation
-	// In game
+	// - In game
 	frame_init(); // Enable timer for frames
 	playing_field_init(); // Initiate playing field
+	// -- Scoreboard
+	display_left_score_update();
+	display_right_score_update();
 	
 	// Enable interrupts
 	enable_interrupt();

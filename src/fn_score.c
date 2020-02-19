@@ -4,11 +4,12 @@
 
 char leftscorebuffer[] = "00";
 char rightscorebuffer[] = "00";
-int sc1 = 0;
-int sc2 = 0;
+int sc1 = -1;
+int sc2 = -1;
 
 void display_left_score_update(void)
 {
+  sc1++;
 	int i, j, k;
 	int c;
 	DISPLAY_CHANGE_TO_COMMAND_MODE;
@@ -34,11 +35,11 @@ void display_left_score_update(void)
 			   spi_send_recv(font[((c+sc1%10))*8 + k]);
     }
 	}
-  sc1++;
 }
 
 void display_right_score_update(void)
 {
+  sc2++;
 	int i, j, k;
 	int c;
 	DISPLAY_CHANGE_TO_COMMAND_MODE;
@@ -64,5 +65,4 @@ void display_right_score_update(void)
 			   spi_send_recv(font[((c+sc2%10))*8 + k]);
     }
 	}
-  sc2++;
 }
