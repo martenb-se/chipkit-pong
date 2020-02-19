@@ -1,2 +1,0 @@
-fn_animation.c.o: fn_animation.c
-fn_animation.c :
