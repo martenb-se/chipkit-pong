@@ -51,6 +51,9 @@ int main()
 
 	// Clear screen on program start
 	screen_clear();
+	
+	// Enable inputs
+	input_init();
 
 	// Initiation
 	// - In game
