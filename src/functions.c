@@ -91,10 +91,10 @@ void user_isr(void) {
 	// Timer 2: Frame updare
 	if((IFS(0) >> 8) & 1) {
 		IFSCLR(0) = 0x00000100;
-		
+
 		// Run frame updates
 		frame_update();
-	
+
 	}
 }
 
@@ -109,7 +109,9 @@ void screen_clear(void) {
 		spi_send_recv(0x22);
 		spi_send_recv(j);	// row 0, 1, 2, 3
 		spi_send_recv(0x0);
-		spi_send_recv(0x10);
+		spi_send_recv(0x21);
+    spi_send_recv(0);
+    spi_send_recv(127);
 		DISPLAY_CHANGE_TO_DATA_MODE;
 
 		i = 0;

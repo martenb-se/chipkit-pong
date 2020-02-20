@@ -9,9 +9,9 @@ int sc2 = -1;
 
 void display_left_score_update(void)
 {
+	int j, k, c;
   sc1++;
-	int i, j, k;
-	int c;
+
 	DISPLAY_CHANGE_TO_COMMAND_MODE;
 	spi_send_recv(0x22);
 	spi_send_recv(0);
@@ -19,8 +19,7 @@ void display_left_score_update(void)
   spi_send_recv(0x10);
 
 	DISPLAY_CHANGE_TO_DATA_MODE;
-
-	for(j = 0; j < 2; j++)
+  for(j = 0; j < 2; j++)
   {
 		c = leftscorebuffer[j];
     if(sc1 > 99)
@@ -39,9 +38,9 @@ void display_left_score_update(void)
 
 void display_right_score_update(void)
 {
+	int j, k, c;
   sc2++;
-	int i, j, k;
-	int c;
+
 	DISPLAY_CHANGE_TO_COMMAND_MODE;
 	spi_send_recv(0x22);
 	spi_send_recv(0);
@@ -49,8 +48,7 @@ void display_right_score_update(void)
   spi_send_recv(0x1f);
 
 	DISPLAY_CHANGE_TO_DATA_MODE;
-
-	for(j = 0; j < 2; j++)
+  for(j = 0; j < 2; j++)
   {
 		c = rightscorebuffer[j];
     if(sc2 > 99)
@@ -62,7 +60,7 @@ void display_right_score_update(void)
       if(j == 0)
         spi_send_recv(font[((c+sc2/10))*8 + k]);
       else if(j == 1)
-			   spi_send_recv(font[((c+sc2%10))*8 + k]);
+			  spi_send_recv(font[((c+sc2%10))*8 + k]);
     }
 	}
 }

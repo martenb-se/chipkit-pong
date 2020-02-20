@@ -43,6 +43,12 @@ extern char twoplayer[2];
 extern char options[3];
 extern char credits[4];
 extern char exit[4];
+extern char paddlesize[9];
+extern char ballspeed[11];
+extern char ballsize[10];
+extern char medium[3];
+extern char fast[4];
+extern char twobytwo[3];
 
 // Scores
 extern char leftscorebuffer[2];

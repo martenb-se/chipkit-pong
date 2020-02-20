@@ -46,7 +46,7 @@ int main()
 	SPI2CONSET = 0x20;
 	/* SPI2CON bit ON = 1; */
 	SPI2CONSET = 0x8000;
-	
+
 	// Random number timer
 	TMR3 = 0;
 	T3CONCLR = 0x70; // Clear 6:4 (set prescale 1:1)
@@ -58,9 +58,16 @@ int main()
 
 	// Clear screen on program start
 	screen_clear();
-	
+
 	// Enable inputs
 	input_init();
+
+	while(1)
+	{
+		start_menu();
+		select_option();
+		check_buttons();
+	}
 
 	// Initiation
 	// - In game
@@ -69,7 +76,7 @@ int main()
 	// -- Scoreboard
 	display_left_score_update();
 	display_right_score_update();
-	
+
 	// Enable interrupts
 	enable_interrupt();
 
