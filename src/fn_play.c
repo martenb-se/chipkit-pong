@@ -199,12 +199,13 @@ void ball_collision_detection(void) {
 	// Collistion on right player
 	} else if (player_ball[0] >= 94 - ball_width/2 && (player_ball[1] >= player_right - player_right_height/2 && player_ball[1] <= player_right + player_right_height/2)) {
 		// Move ball
-		player_ball[0] = 93 - ball_width/2;
+		player_ball[0] = 92 - ball_width/2;
+		
 		// Flip direction - moving up
 		if (player_ball_direction <= PI/2 && player_ball_direction > 0)
-			player_ball_direction = player_ball_direction - (player_ball_direction - PI/2)*2;
+			player_ball_direction = player_ball_direction + (PI/2 - player_ball_direction)*2;
 		// Flip direction - moving down
-		else if (player_ball_direction >= 3*(PI/2) && player_ball_direction <= 4*(PI/2))
+		else if (player_ball_direction >= 3*(PI/2) && player_ball_direction < 4*(PI/2))
 			player_ball_direction = player_ball_direction - (player_ball_direction - 3*(PI/2))*2;
 		// Right back
 		else if (player_ball_direction == 0)
