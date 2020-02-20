@@ -47,6 +47,13 @@ int main()
 	/* SPI2CON bit ON = 1; */
 	SPI2CONSET = 0x8000;
 
+	// Random number timer
+  TMR3 = 0;
+  T3CONCLR = 0x70; // Clear 6:4 (set prescale 1:1)
+  PR3 = 65293;
+  // Turn on
+  T3CONSET = 0x8000; // Bit 15
+
 	display_init();
 
 	// Clear screen on program start
