@@ -49,6 +49,7 @@ extern char ballsize[10];
 extern char medium[3];
 extern char fast[4];
 extern char twobytwo[3];
+extern char countdown[6];
 
 // Scores
 extern char leftscorebuffer[2];

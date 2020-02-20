@@ -12,6 +12,7 @@ char ballsize[] = "BALL SIZE:";
 char medium[] = "MED";
 char fast[] = "FAST";
 char twobytwo[] = "2x2";
+char countdown[] = "321GO!";
 int option;
 int button;
 
@@ -72,6 +73,27 @@ void options_menu_two(char arr1[], char arr2[], int row, int len1, int len2)
     c = arr2[j];
     for(k = 0; k < 8; k++)
       spi_send_recv(font[(c*8 + k)]);
+  }
+}
+
+void game_countdown(void)
+{
+  int j, k, c;
+
+  for(j = 0; j < 3; j++)
+  {
+    DISPLAY_CHANGE_TO_COMMAND_MODE;
+    spi_send_recv(0x22);
+    spi_send_recv(1);
+    spi_send_recv(0x0);
+    spi_send_recv(0x21);
+    spi_send_recv(59);
+    spi_send_recv(67);
+    DISPLAY_CHANGE_TO_DATA_MODE;
+    c = countdown[j];
+    for(k = 0; k < 8; k++)
+      spi_send_recv(font[(c*8 + k)]);
+    quicksleep(3000000);
   }
 }
 
@@ -228,6 +250,8 @@ void select_option(void)
   {
     if(option == 1)                           // if arrow points to 2-player mode
     {
+      screen_clear();
+      game_countdown();
       screen_clear();
       // Initiation
     	// - In game
