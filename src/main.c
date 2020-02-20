@@ -51,15 +51,10 @@ int main()
 
 	// Clear screen on program start
 	screen_clear();
-
+	
 	// Enable inputs
 	input_init();
 
-	start_menu();
-	while(1)
-	{
-		check_buttons();
-	}
 	// Initiation
 	// - In game
 	frame_init(); // Enable timer for frames
@@ -67,7 +62,7 @@ int main()
 	// -- Scoreboard
 	display_left_score_update();
 	display_right_score_update();
-
+	
 	// Enable interrupts
 	enable_interrupt();
 

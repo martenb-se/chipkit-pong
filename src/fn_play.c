@@ -14,7 +14,7 @@ uint8_t player_left_height = 8;
 uint8_t player_right_height = 8;
 uint8_t ball_width = 2;
 uint8_t ball_height = 2;
-double player_ball_direction = PI + PI/3;
+double player_ball_direction = -1;
 uint8_t player_ball_speed = 1;
 unsigned int rand_next = 0xd131;
 
@@ -103,8 +103,8 @@ void move_player_right(uint8_t rel_y) {
 
 void move_ball() {
 	// Randomize first movement
-	//if (player_ball_direction == -1)
-	//	player_ball_direction = PI/6 + (PI/6)/rand() + (PI/2) * (rand()%4);
+	if (player_ball_direction == -1)
+		player_ball_direction = PI/6 + (PI/6)/rand() + (PI/2) * (rand()%4);
 	
 	// Calculate new movementsdf
 	if (player_ball_movement_pointer == 0) {
@@ -180,7 +180,7 @@ void ball_collision_detection(void) {
 		player_ball_direction = player_ball_direction - (player_ball_direction - PI/2)*2;
 		player_ball_movement_pointer = 0;
 		
-	// Collistion on score (beside player player)
+	// Collistion on score (beside left player)
 	} else if (player_ball[0] <= ball_width/2 + 2 && (player_ball[1] <= player_left - player_left_height/2 || player_ball[1] >= player_left + player_left_height/2)) {
 		
 		// Reset ball
@@ -188,7 +188,8 @@ void ball_collision_detection(void) {
 		player_ball[1] = 16;
 		
 		// Direct opposite
-		player_ball_direction = PI/3;
+		//player_ball_direction = PI/3;
+		player_ball_direction = PI/6 + (PI/6)/rand() + (3*(PI/2)) * (rand()%2);
 		
 		player_ball_movement_pointer = 0;
 		
@@ -200,10 +201,18 @@ void ball_collision_detection(void) {
 		// Move ball
 		player_ball[0] = 93 - ball_width/2;
 		// Flip direction - moving up
-		player_ball_direction = player_ball_direction - (player_ball_direction - PI/2)*2;
+		if (player_ball_direction <= PI/2 && player_ball_direction > 0)
+			player_ball_direction = player_ball_direction - (player_ball_direction - PI/2)*2;
+		// Flip direction - moving down
+		else if (player_ball_direction >= 3*(PI/2) && player_ball_direction <= 4*(PI/2))
+			player_ball_direction = player_ball_direction - (player_ball_direction - 3*(PI/2))*2;
+		// Right back
+		else if (player_ball_direction == 0)
+			player_ball_direction = PI;
+			
 		player_ball_movement_pointer = 0;
 		
-	// Collistion on score (beside player player)
+	// Collistion on score (beside right player)
 	} else if (player_ball[0] >= 94 - ball_width/2 && (player_ball[1] <= player_right - player_right_height/2 || player_ball[1] >= player_right + player_right_height/2)) {
 		
 		// Reset ball
@@ -211,7 +220,8 @@ void ball_collision_detection(void) {
 		player_ball[1] = 16;
 		
 		// Direct opposite
-		player_ball_direction = PI+PI/3;
+		//player_ball_direction = PI+PI/3;
+		player_ball_direction = (PI/2 + PI/6) + (PI/6)/rand() + (PI/2) * (rand()%2);
 		
 		player_ball_movement_pointer = 0;
 		
