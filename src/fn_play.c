@@ -3,8 +3,6 @@
 #include <math.h>
 #include "project.h"
 
-//rand() % 50
-
 uint8_t playbuffer[4][96];
 uint8_t player_left = 16;
 uint8_t player_right = 16;
@@ -16,8 +14,16 @@ uint8_t player_left_height = 8;
 uint8_t player_right_height = 8;
 uint8_t ball_width = 2;
 uint8_t ball_height = 2;
-double player_ball_direction = PI+PI/4;
+double player_ball_direction = PI + PI/3;
 uint8_t player_ball_speed = 1;
+unsigned int rand_next = 0xd131;
+
+unsigned int rand(void)
+{
+	rand_next = TMR3;
+	
+	return rand_next;
+}
 
 void playbuffer_clear(void) {
 	int i;
@@ -96,7 +102,11 @@ void move_player_right(uint8_t rel_y) {
 
 
 void move_ball() {
-	// Calculate new movement
+	// Randomize first movement
+	//if (player_ball_direction == -1)
+	//	player_ball_direction = PI/6 + (PI/6)/rand() + (PI/2) * (rand()%4);
+	
+	// Calculate new movementsdf
 	if (player_ball_movement_pointer == 0) {
 		int i;
 		// Calculations
@@ -147,20 +157,69 @@ void check_player_moves(void) {
 void ball_collision_detection(void) {
 	// Check for walls
 	// Collision on upper wall
-	if (player_ball[1] == ball_height/2 + 1)
-	{
-		// Flip direction
+	if (player_ball[1] == ball_height/2 + 1) {
+		// Move ball
+		player_ball[1] = ball_height/2 + 2;
+		// Flip direction - moving left
 		player_ball_direction	= player_ball_direction + (PI - player_ball_direction)*2;
 		// Reset movement pointer
 		player_ball_movement_pointer = 0;
 	// Collision on lower wall
-	} else if (player_ball[1] == 31 - ball_height/2)
-	{
-		// Flip direction
+	} else if (player_ball[1] == 31 - ball_height/2) {
+		// Move ball
+		player_ball[1] = 30 - (ball_height/2);
+		// Flip direction - moving left
 		player_ball_direction	= player_ball_direction - (player_ball_direction - PI)*2;
 		// Reset movement pointer
 		player_ball_movement_pointer = 0;
+	// Collistion on left player
+	} else if (player_ball[0] <= ball_width/2 + 2 && (player_ball[1] >= player_left - player_left_height/2 && player_ball[1] <= player_left + player_left_height/2)) {
+		// Move ball
+		player_ball[0] = ball_width/2 + 3;
+		// Flip direction - moving up
+		player_ball_direction = player_ball_direction - (player_ball_direction - PI/2)*2;
+		player_ball_movement_pointer = 0;
+		
+	// Collistion on score (beside player player)
+	} else if (player_ball[0] <= ball_width/2 + 2 && (player_ball[1] <= player_left - player_left_height/2 || player_ball[1] >= player_left + player_left_height/2)) {
+		
+		// Reset ball
+		player_ball[0] = 48;
+		player_ball[1] = 16;
+		
+		// Direct opposite
+		player_ball_direction = PI/3;
+		
+		player_ball_movement_pointer = 0;
+		
+		// Update scores
+		display_right_score_update();
+		
+	// Collistion on right player
+	} else if (player_ball[0] >= 94 - ball_width/2 && (player_ball[1] >= player_right - player_right_height/2 && player_ball[1] <= player_right + player_right_height/2)) {
+		// Move ball
+		player_ball[0] = 93 - ball_width/2;
+		// Flip direction - moving up
+		player_ball_direction = player_ball_direction - (player_ball_direction - PI/2)*2;
+		player_ball_movement_pointer = 0;
+		
+	// Collistion on score (beside player player)
+	} else if (player_ball[0] >= 94 - ball_width/2 && (player_ball[1] <= player_right - player_right_height/2 || player_ball[1] >= player_right + player_right_height/2)) {
+		
+		// Reset ball
+		player_ball[0] = 48;
+		player_ball[1] = 16;
+		
+		// Direct opposite
+		player_ball_direction = PI+PI/3;
+		
+		player_ball_movement_pointer = 0;
+		
+		// Update scores
+		display_left_score_update();
+		
 	}
+	
 }
 
 void draw_players(void) {

@@ -32,6 +32,13 @@ void frame_init(void) {
   //T2CONbits.ON = 1;
   T2CONSET = 0x8000; // Bit 15
   
+  // Random number timer
+  TMR3 = 0;
+  T3CONCLR = 0x70; // Clear 6:4 (set prescale 1:1)
+  PR3 = 65293;
+  // Turn on
+  T3CONSET = 0x8000; // Bit 15
+  
 }
 
 void frame_update(void) {
@@ -39,22 +46,25 @@ void frame_update(void) {
 	// Run every frame (every 0.01 seconds)
 	playing_field_update();
 		
-	// Run every 5 frames (every 0.1 seconds)
-	if (framecount%5 == 0) {
-		// Allow one pixel/0.05 seconds
+	// Run every 2 frames (every 0.02 seconds)
+	if (framecount%2 == 0) {
+		// Allow one pixel/0.02 seconds
 		check_player_moves();
 		
 		// Move ball on every frame so speed can be controlled
+		ball_collision_detection();
 		move_ball();
+	
+	// Run every 5 frames (every 0.05 seconds)
+	} else if (framecount%5 == 0) {
+
 	
 	// Run every 10 frames (every 0.1 seconds)
 	} else if (framecount%10 == 0) {
 	
 	// Run every 100 frames (every second)
 	} else if (framecount == 99) {
-		// Update scores
-		display_left_score_update();
-		display_right_score_update();
+
 		
 	}
 	

@@ -53,6 +53,8 @@ void display_left_score_update(void);
 void display_right_score_update(void);
 
 // Playing
+extern unsigned int rand_next;
+unsigned int rand(void);
 extern uint8_t playbuffer[4][96];								// Buffer for playing field pixels
 extern uint8_t player_left;											// Y-position for left player
 extern uint8_t player_right;										// Y-position for left player
@@ -62,7 +64,8 @@ extern uint8_t player_ball_y[96];								// Y-position for the upcoming movement
 extern uint8_t player_ball_movement_pointer;
 double player_ball_direction;										// Angle for ball movement
 extern uint8_t player_ball_speed;								// Ball speed
-extern uint8_t player_height;
+extern uint8_t player_left_height;
+extern uint8_t player_right_height;
 extern uint8_t ball_width;
 extern uint8_t ball_height;
 void playbuffer_clear(void);										// Clear pixelbuffer for playing field
