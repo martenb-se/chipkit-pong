@@ -10,6 +10,8 @@
 #define DISPLAY_TURN_OFF_VDD (PORTFSET = 0x40)								// OLED VDD disable 								- 0000 0000 0100 0000 (RF6 - PIN 38)
 #define DISPLAY_TURN_OFF_VBAT (PORTFSET = 0x20)								// OLED VBAT disable 								- 0000 0000 0010 0000 (RF5 - PIN 40)
 
+#define PI 3.14159265
+
 void display_image(int x, const uint8_t *data);
 void display_init(void);
 void display_string(int line, char *s);
@@ -55,7 +57,10 @@ extern uint8_t playbuffer[4][96];								// Buffer for playing field pixels
 extern uint8_t player_left;											// Y-position for left player
 extern uint8_t player_right;										// Y-position for left player
 extern uint8_t player_ball[2];									// XY-position for the ball
-extern uint8_t player_ball_direction;						// Degrees for ball movement
+extern uint8_t player_ball_x[96];								// X-position for the upcoming movement
+extern uint8_t player_ball_y[96];								// Y-position for the upcoming movement
+extern uint8_t player_ball_movement_pointer;
+double player_ball_direction;										// Angle for ball movement
 extern uint8_t player_ball_speed;								// Ball speed
 extern uint8_t player_height;
 extern uint8_t ball_width;
@@ -66,8 +71,9 @@ void playing_field_update(void);								// Update playing field's pixelbuffer
 void play_xy(int x, int y); 										// Draw x, y pixel on playing field
 void move_player_left(uint8_t rel_y);						// Move left player relative Y-position
 void move_player_right(uint8_t rel_y);					// Move right player relative Y-position
-void move_ball(uint8_t rel_x, uint8_t rel_y);		// Move ball to relative XY-position
+void move_ball();																// Move ball
 void draw_players(void);												// Draw players on playing field
 void draw_ball(void);														// Draw ball on playing field
 void check_player_moves(void);									// Check input and move players
 void init_ball(void);														// Initiate ball movement
+void ball_collision_detection(void);						// Ball collision detection

@@ -43,6 +43,9 @@ void frame_update(void) {
 	if (framecount%5 == 0) {
 		// Allow one pixel/0.05 seconds
 		check_player_moves();
+		
+		// Move ball on every frame so speed can be controlled
+		move_ball();
 	
 	// Run every 10 frames (every 0.1 seconds)
 	} else if (framecount%10 == 0) {

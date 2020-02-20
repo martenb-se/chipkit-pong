@@ -1,14 +1,20 @@
 #include <stdint.h>   /* Declarations of uint_32 and the like */
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
+#include <math.h>
 #include "project.h"
 
 uint8_t playbuffer[4][96];
 uint8_t player_left = 16;
 uint8_t player_right = 16;
 uint8_t player_ball[] = {48, 16};
+uint8_t player_ball_x[96];
+uint8_t player_ball_y[96];
+uint8_t player_ball_movement_pointer = 0;
 uint8_t player_height = 8;
 uint8_t ball_width = 2;
 uint8_t ball_height = 2;
+double player_ball_direction = PI+PI/4;
+uint8_t player_ball_speed = 1;
 
 void screen_clear(void) {
 	int i;
@@ -108,7 +114,25 @@ void move_player_right(uint8_t rel_y) {
 		player_right = 31 - player_height/2;
 }
 
-void move_ball(uint8_t rel_x, uint8_t rel_y) {
+
+void move_ball() {
+	// Calculate new movement
+	if (player_ball_movement_pointer == 0) {
+		int i;
+		// Calculations
+		for(i = 0; i < 96; i++) {
+			player_ball_x[i] = (uint8_t)(player_ball[0] + (cos(player_ball_direction) * (double)(i+1)));
+			player_ball_y[i] = (uint8_t)(player_ball[1] - (sin(player_ball_direction) * (double)(i+1)));
+			
+		}
+		
+	}
+	
+	// Move
+	player_ball[0] = player_ball_x[player_ball_movement_pointer];
+	player_ball[1] = player_ball_y[player_ball_movement_pointer];
+	
+	player_ball_movement_pointer++;
 	
 }
 
@@ -140,6 +164,10 @@ void check_player_moves(void) {
 	
 }
 
+void ball_collision_detection(void) {
+	
+}
+
 void draw_players(void) {
 	int i;
 	
@@ -163,7 +191,6 @@ void draw_ball(void) {
 			
 		}
 	}
-	
 }
 
 
