@@ -86,4 +86,5 @@ void draw_players(void);												// Draw players on playing field
 void draw_ball(void);														// Draw ball on playing field
 void check_player_moves(void);									// Check input and move players
 void init_ball(void);														// Initiate ball movement
+double ball_bounce_calculation(double angle);		// Calculate bounces
 void ball_collision_detection(void);						// Ball collision detection
