@@ -95,6 +95,24 @@ void game_countdown(void)
       spi_send_recv(font[(c*8 + k)]);
     quicksleep(3000000);
   }
+  screen_clear();
+  {
+    DISPLAY_CHANGE_TO_COMMAND_MODE;
+    spi_send_recv(0x22);
+    spi_send_recv(1);
+    spi_send_recv(0x0);
+    spi_send_recv(0x21);
+    spi_send_recv(51);
+    spi_send_recv(75);
+    DISPLAY_CHANGE_TO_DATA_MODE;
+    for(j = 3; j < 6; j++)
+    {
+      c = countdown[j];
+      for(k = 0; k < 8; k++)
+        spi_send_recv(font[(c*8 + k)]);
+    }
+    quicksleep(3000000);
+  }
 }
 
 void start_menu(void)
@@ -116,7 +134,12 @@ void options_menu()
     if ((input_get_buttons() >> 1) & 1)         // if button 2 is pressed
     {
       screen_clear();
-      start_menu();
+      while(1)
+      {
+        start_menu();
+    		select_option();
+    		check_buttons();
+      }
     }
   }
 }
