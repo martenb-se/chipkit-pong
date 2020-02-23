@@ -1,3 +1,8 @@
+#define MATH_ERRNO = 0;
+#define math_errhandling = 0;
+//#define errno = 0;
+extern int errno;
+
 #define DISPLAY_CHANGE_TO_COMMAND_MODE (PORTFCLR = 0x10)			// OLED data(1)/command(0) select 	- 0000 0000 0001 0000 (RF4 - PIN 39)
 #define DISPLAY_CHANGE_TO_DATA_MODE (PORTFSET = 0x10)					// OLED data(1)/command(0) select   -
 
@@ -19,15 +24,21 @@ void display_update(void);
 uint8_t spi_send_recv(uint8_t data);
 void quicksleep(int cyc);
 
-/* Declare bitmap array containing font */
 extern const uint8_t const font[128*8];
-/* Declare text buffer for display output */
+extern const uint8_t const numbers_mini[11*4];
 extern char textbuffer[4][16];
 
 // Clear whole screen
 void screen_clear(void);
 
+// Main
+extern uint8_t in_game;
+
 // Input
+extern uint8_t controller_input_a;
+extern uint8_t controller_input_b;
+extern uint8_t controller_input_a_buffer;
+extern uint8_t controller_input_b_buffer;
 void input_init(void);
 int input_get_buttons(void);
 
@@ -36,7 +47,6 @@ void frame_init(void);
 void frame_update(void);
 
 // Menu
-void start_menu(void);
 extern char gametitle[16];
 extern char oneplayer[2];
 extern char twoplayer[2];
@@ -50,6 +60,18 @@ extern char medium[3];
 extern char fast[4];
 extern char twobytwo[3];
 extern char countdown[6];
+void start_menu(void);
+void options_menu_one(char arr[], int row, int len);
+void options_menu_two(char arr1[], char arr2[], int row, int len1, int len2);
+void game_countdown(void);
+void start_menu(void);
+void options_menu();
+void menu_select_1p(void);
+void menu_select_2p(void);
+void menu_select_opt(void);
+void select_option(void);
+void check_buttons(void);
+
 
 // Scores
 extern char leftscorebuffer[2];
@@ -62,15 +84,33 @@ void display_right_score_update(void);
 // Playing
 extern unsigned int rand_next;
 unsigned int rand(void);
+extern uint8_t play_mode_score;									// Scored play: Score goal
+extern int play_mode_timed;											// Timed play: Time
+extern int play_time_left;											// Timed play: Time left
+extern int play_timestamp;											// Timed play: Timestamp
+extern uint8_t player_cpu;											// CPU level
+extern uint8_t player_cpu_hold;
 extern uint8_t playbuffer[4][96];								// Buffer for playing field pixels
+extern uint8_t player_indent;										// Gap between players and nextmost wall
 extern uint8_t player_left;											// Y-position for left player
 extern uint8_t player_right;										// Y-position for left player
 extern uint8_t player_ball[2];									// XY-position for the ball
 extern uint8_t player_ball_x[96];								// X-position for the upcoming movement
 extern uint8_t player_ball_y[96];								// Y-position for the upcoming movement
-extern uint8_t player_ball_movement_pointer;
-double player_ball_direction;										// Angle for ball movement
-extern uint8_t player_ball_speed;								// Ball speed
+extern double player_ball_movement_pointer;
+extern double player_ball_direction;						// Angle for ball movement;
+extern uint8_t play_game_over;
+extern uint8_t player_left_pause;
+extern uint8_t player_right_pause;
+extern uint8_t play_quit_init;
+extern uint8_t ball_speed;											// Ball speed
+extern uint8_t ball_speed_temp;									// Temporary ball speed
+extern uint8_t player_left_speed;
+extern uint8_t player_right_speed;
+extern uint8_t player_left_command;
+extern uint8_t player_right_command;
+extern uint8_t player_left_hold;
+extern uint8_t player_right_hold;
 extern uint8_t player_left_height;
 extern uint8_t player_right_height;
 extern uint8_t ball_width;
@@ -78,13 +118,24 @@ extern uint8_t ball_height;
 void playbuffer_clear(void);										// Clear pixelbuffer for playing field
 void playing_field_init(void);	 								// Initiate playing field with borders
 void playing_field_update(void);								// Update playing field's pixelbuffer
+void playing_field_paused(void);
+void playing_field_game_over(void);
+void playing_exit(void);
+void playing_replay(void);
 void play_xy(int x, int y); 										// Draw x, y pixel on playing field
+void play_xy_clear(int x, int y);								// Erase x, y pixel on playing field
 void move_player_left(uint8_t rel_y);						// Move left player relative Y-position
 void move_player_right(uint8_t rel_y);					// Move right player relative Y-position
 void move_ball();																// Move ball
+void timer_countdown(void);
+void draw_timer(int time);
+void draw_pause(void);
 void draw_players(void);												// Draw players on playing field
 void draw_ball(void);														// Draw ball on playing field
 void check_player_moves(void);									// Check input and move players
 void init_ball(void);														// Initiate ball movement
-double ball_bounce_calculation(double angle);		// Calculate bounces
-void ball_collision_detection(void);						// Ball collision detection
+double ball_bounce_calculation_x(double angle);	// Calculate bounces on x
+double ball_bounce_calculation_y(double angle);	// Calculate bounces on y
+void ball_collision_detection(void);						// Ball collision
+double pow_simle(double base, int exp);
+double acos_simple(double x);

@@ -2,6 +2,7 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "project.h"
 
+uint8_t in_game = 0;
 
 int main()
 {
@@ -59,8 +60,14 @@ int main()
 	// Clear screen on program start
 	screen_clear();
 
-	// Enable inputs
+	// Enable inputs and inputtimers
 	input_init();
+	
+	// Enable timer for frames
+	frame_init();
+
+	// Enable interrupts
+	enable_interrupt();
 
 	while(1)
 	{
@@ -69,21 +76,21 @@ int main()
 		check_buttons();
 	}
 
+	/*
+
 	// Initiation
 	// - In game
-	frame_init(); // Enable timer for frames
 	playing_field_init(); // Initiate playing field
 	// -- Scoreboard
 	display_left_score_update();
 	display_right_score_update();
-
-	// Enable interrupts
-	enable_interrupt();
 
 	while(1)
 	{
 		// Do nothing
 		quicksleep(10);
 	}
+	
+	*/
 
 }

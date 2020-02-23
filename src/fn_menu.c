@@ -131,7 +131,9 @@ void options_menu()
 
   while(1)
   {
-    if ((input_get_buttons() >> 1) & 1)         // if button 2 is pressed
+    if (((input_get_buttons() >> 1) & 1)         // if button 2 is pressed
+  	|| ((controller_input_a >> 5) & 1)			     // if player left B is pressed
+  	|| ((controller_input_b >> 5) & 1))			     // if player right B is pressed
     {
       screen_clear();
       while(1)
@@ -269,8 +271,41 @@ void menu_select_opt(void)
 
 void select_option(void)
 {
-  if ((input_get_buttons() >> 2) & 1)          // if button 3 is pressed
+  if (((input_get_buttons() >> 2) & 1)          // if button 3 is pressed
+  	|| ((controller_input_a >> 3) & 1)			    // if player left START is pressed
+  	|| ((controller_input_a >> 6) & 1)			    // if player left A is pressed
+  	|| ((controller_input_b >> 3) & 1)			    // if player right START is pressed
+  	|| ((controller_input_b >> 6) & 1))			    // if player right A is pressed
   {
+  	if(option == 0)                           // if arrow points to 1-player mode
+    {
+      screen_clear();
+      game_countdown();
+      screen_clear();
+      // Initiation
+    	// - In game
+    	in_game = 1; // Activate game
+    	playing_field_init(); // Initiate playing field
+    	// -- Scoreboard
+    	display_left_score_update();
+    	display_right_score_update();
+    	
+    	// Get stuck here while in game
+      while(in_game)
+      {
+        quicksleep(10);
+      }
+      
+      // Get stuck here while quitting (so the game doesn't start again immediately)
+  		while ((controller_input_a >> 6) & 1)			  // if player left A is pressed
+      {
+        quicksleep(10);
+      }
+      
+      // Clear screen after game is done
+      screen_clear();
+    }
+  	
     if(option == 1)                           // if arrow points to 2-player mode
     {
       screen_clear();
@@ -278,18 +313,27 @@ void select_option(void)
       screen_clear();
       // Initiation
     	// - In game
-    	frame_init(); // Enable timer for frames
+    	in_game = 2; // Activate game
     	playing_field_init(); // Initiate playing field
     	// -- Scoreboard
     	display_left_score_update();
     	display_right_score_update();
-
-    	// Enable interrupts
-    	enable_interrupt();
-      while(1)
+    	
+    	// Get stuck here while in game
+      while(in_game)
       {
         quicksleep(10);
       }
+      
+      // Get stuck here while quitting (so the game doesn't start again immediately)
+  		while (((controller_input_a >> 6) & 1)			  // if player left A is pressed
+  		|| ((controller_input_b >> 6) & 1))			    	// if player right A is pressed
+      {
+        quicksleep(10);
+      }
+      
+      // Clear screen after game is done
+      screen_clear();
     }
 
     if(option == 2)                           // if arrow points to options
@@ -303,12 +347,16 @@ void select_option(void)
 
 void check_buttons(void)
 {
-  if ((input_get_buttons() >> 3) & 1)        // if button 4 is pressed
+  if (((input_get_buttons() >> 3) & 1)       // if button 4 is pressed
+  	|| ((controller_input_a >> 4) & 1)			 // if player left SELECT is pressed
+  	|| ((controller_input_b >> 4) & 1))			 // if player right SELECT is pressed
   {
     button = 1;
     while(button == 1)
     {
-      if ((!(input_get_buttons() >> 3) & 1))   // if button 4 is released
+      if (((!(input_get_buttons() >> 3) & 1))       // if button 4 is pressed
+  			&& (!(controller_input_a >> 4) & 1)					// if player left SELECT is pressed
+  			&& (!(controller_input_b >> 4) & 1))				// if player right SELECT is pressed
       {
         option++;
         if(option > 2)

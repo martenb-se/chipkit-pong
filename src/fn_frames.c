@@ -37,16 +37,26 @@ void frame_init(void) {
 void frame_update(void) {
 	
 	// Run every frame (every 0.01 seconds)
-	playing_field_update();
-		
-	// Run every 2 frames (every 0.02 seconds)
-	if (framecount%2 == 0) {
-		// Allow one pixel/0.02 seconds
-		check_player_moves();
-		
+	if (play_game_over == 0 && player_left_pause == 0 && player_right_pause == 0) {
+		playing_field_update();
+			
 		// Move ball on every frame so speed can be controlled
 		ball_collision_detection();
 		move_ball();
+	
+	} else if (player_left_pause == 1 || player_right_pause == 1) {
+		playing_field_paused();
+		
+	} else if (play_game_over >= 1) {
+		playing_field_game_over();
+		
+	}
+	
+	// Allow one pixel/0.01 seconds
+	check_player_moves();
+		
+	// Run every 2 frames (every 0.02 seconds)
+	if (framecount%2 == 0) {
 	
 	// Run every 5 frames (every 0.05 seconds)
 	} else if (framecount%5 == 0) {
@@ -57,7 +67,8 @@ void frame_update(void) {
 	
 	// Run every 100 frames (every second)
 	} else if (framecount == 99) {
-
+		if(play_mode_timed != 0 && player_left_pause == 0 && player_right_pause == 0 && play_game_over == 0)
+			timer_countdown();
 		
 	}
 	
