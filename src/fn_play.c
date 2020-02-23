@@ -387,8 +387,8 @@ void check_player_moves(void) {
 						
 						// Held for required amount of time
 						// - Hold A for super slowdown
-						if (((controller_input_a >> 6) & 1) && player_right_hold == (player_right_speed*2)
-							|| !((controller_input_a >> 6) & 1) && player_right_hold == player_right_speed) {
+						if (((controller_input_b >> 6) & 1) && player_right_hold == (player_right_speed*2)
+							|| !((controller_input_b >> 6) & 1) && player_right_hold == player_right_speed) {
 							move_player_right(-1);
 							// Reset hold
 							player_right_hold = 0;
@@ -415,8 +415,8 @@ void check_player_moves(void) {
 						
 						// Held for required amount of time
 						// - Hold A for super slowdown
-						if (((controller_input_a >> 6) & 1) && player_right_hold == (player_right_speed*2)
-							|| !((controller_input_a >> 6) & 1) && player_right_hold == player_right_speed) {
+						if (((controller_input_b >> 6) & 1) && player_right_hold == (player_right_speed*2)
+							|| !((controller_input_b >> 6) & 1) && player_right_hold == player_right_speed) {
 							move_player_right(1);
 							// Reset hold
 							player_right_hold = 0;
@@ -1007,7 +1007,7 @@ void playing_field_game_over(void) {
 		if(sc1 > sc2)
 			draw_message("GAME OVER\nLEFT WON!");
 		else if(sc2 > sc1)
-			if(player_cpu > 0)
+			if(in_game == 1)
 				draw_message("GAME OVER\nCPU WON!");
 			else
 				draw_message("GAME OVER\nRIGHT WON!");
