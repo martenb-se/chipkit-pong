@@ -8,13 +8,25 @@ char twoplayer[] = "2P";
 char options[] = "OPT";
 char paddlesize[] = "PAD SIZE:";
 char ballspeed[] = "BALL SPEED:";
-char ballsize[] = "BALL SIZE:";
-char medium[] = "MED";
 char fast[] = "FAST";
+char slow[] = "SLOW";
+char ballsize[] = "BALL SIZE:";
+char small[] = "SMALL";
+char medium[] = "MED";
+char large[] = "LARGE";
 char twobytwo[] = "2x2";
+char fourbyfour[] = "4x4";
+char sixbysix[] = "6x6";
 char countdown[] = "321GO!";
+char difficulty[] = "DIFF:";
+char normal[] = "NORMAL";
+char hard[] = "HARD";
+char god[] = "GOD";
+char easy[] = "EASY";
 int option;
 int button;
+int in_menu;
+int in_options;
 
 
 void options_menu_one(char arr[], int row, int len)
@@ -123,20 +135,203 @@ void start_menu(void)
 }
 
 
-void options_menu()
+void blink_select(int row, int len1, int len2)
 {
+  int i, k, l;
+  l = (128 - (len1*8 + len2*8)) / 3;
+
+  DISPLAY_CHANGE_TO_COMMAND_MODE;
+  spi_send_recv(0x22);
+  spi_send_recv(row);
+  spi_send_recv(0x0);
+  spi_send_recv(0x21);
+  spi_send_recv(l + len1*8);
+  spi_send_recv(127);
+  DISPLAY_CHANGE_TO_DATA_MODE;
+  for(i = 0; i < (127 - (l + len1*8)); i++)
+  {
+    for(k = 0; k < 8; k++)
+      spi_send_recv(font[(0 + k)]);
+  }
+  quicksleep(2000000);
+}
+
+
+void options_menu(void)
+{
+  int opt, optloop;
+
   options_menu_two(paddlesize, medium, 0, sizeof(paddlesize), sizeof(medium));
   options_menu_two(ballsize, twobytwo, 1, sizeof(ballsize), sizeof(twobytwo));
-  options_menu_two(ballspeed, fast, 3, sizeof(ballspeed), sizeof(fast));
+  options_menu_two(ballspeed, fast, 2, sizeof(ballspeed), sizeof(fast));
+  options_menu_two(difficulty, normal, 3, sizeof(difficulty), sizeof(normal));
 
-  while(1)
+  while(in_options)
   {
-    if (((input_get_buttons() >> 1) & 1)         // if button 2 is pressed
-  	|| ((controller_input_a >> 5) & 1)			     // if player left B is pressed
+    while(opt == 0)
+    {
+      optloop = 0;
+      while(optloop == 0)                                                                      // while pad size is selected
+      {
+        options_menu_two(paddlesize, medium, 0, sizeof(paddlesize), sizeof(medium));
+        quicksleep(2000000);
+        blink_select(0, sizeof(paddlesize), sizeof(medium));                              // first option blinking (medium)
+        if (((controller_input_a >> 4) & 1)                                               // if SELECT is pressed
+        || ((controller_input_b >> 4) & 1))			                                          // if SELECT is pressed
+        {
+          while(optloop == 0)
+          {
+            options_menu_two(paddlesize, large, 0, sizeof(paddlesize), sizeof(large));
+            quicksleep(2000000);
+            blink_select(0, sizeof(paddlesize), sizeof(large));
+            if (((controller_input_a >> 4) & 1)
+            || ((controller_input_b >> 4) & 1))
+            {
+              while(optloop == 0)
+              {
+                options_menu_two(paddlesize, small, 0, sizeof(paddlesize), sizeof(small));
+                quicksleep(2000000);
+                blink_select(0, sizeof(paddlesize), sizeof(small));
+                if (((controller_input_a >> 4) & 1)
+                || ((controller_input_b >> 4) & 1))
+                {
+                  optloop = 1;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+
+    while(opt == 1)
+    {
+      optloop = 0;
+      while(optloop == 0)
+      {
+        options_menu_two(ballsize, twobytwo, 1, sizeof(ballsize), sizeof(twobytwo));
+        quicksleep(2000000);
+        blink_select(1, sizeof(ballsize), sizeof(twobytwo));
+        if (((controller_input_a >> 4) & 1)
+        || ((controller_input_b >> 4) & 1))
+        {
+          while(optloop == 0)
+          {
+            options_menu_two(ballsize, fourbyfour, 1, sizeof(ballsize), sizeof(fourbyfour));
+            quicksleep(2000000);
+            blink_select(1, sizeof(ballsize), sizeof(fourbyfour));
+            if (((controller_input_a >> 4) & 1)
+            || ((controller_input_b >> 4) & 1))
+            {
+              while(optloop == 0)
+              {
+                options_menu_two(ballsize, sixbysix, 1, sizeof(ballsize), sizeof(sixbysix));
+                quicksleep(2000000);
+                blink_select(1, sizeof(ballsize), sizeof(sixbysix));
+                if (((controller_input_a >> 4) & 1)
+                || ((controller_input_b >> 4) & 1))
+                {
+                  optloop = 1;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    while(opt == 2)
+    {
+      optloop = 0;
+      while(optloop == 0)
+      {
+        options_menu_two(ballspeed, normal, 1, sizeof(ballspeed), sizeof(normal));
+        quicksleep(2000000);
+        blink_select(1, sizeof(ballspeed), sizeof(normal));
+        if (((controller_input_a >> 4) & 1)
+        || ((controller_input_b >> 4) & 1))
+        {
+          while(optloop == 0)
+          {
+            options_menu_two(ballspeed, fast, 1, sizeof(ballspeed), sizeof(fast));
+            quicksleep(2000000);
+            blink_select(1, sizeof(ballspeed), sizeof(fast));
+            if (((controller_input_a >> 4) & 1)
+            || ((controller_input_b >> 4) & 1))
+            {
+              while(optloop == 0)
+              {
+                options_menu_two(ballspeed, slow, 1, sizeof(ballspeed), sizeof(slow));
+                quicksleep(2000000);
+                blink_select(1, sizeof(ballspeed), sizeof(slow));
+                if (((controller_input_a >> 4) & 1)
+                || ((controller_input_b >> 4) & 1))
+                {
+                  optloop = 1;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    while(opt == 3)
+    {
+      optloop = 0;
+      while(optloop == 0)
+      {
+        options_menu_two(difficulty, normal, 1, sizeof(difficulty), sizeof(normal));
+        quicksleep(2000000);
+        blink_select(1, sizeof(difficulty), sizeof(normal));
+        if (((controller_input_a >> 4) & 1)
+        || ((controller_input_b >> 4) & 1))
+        {
+          while(optloop == 0)
+          {
+            options_menu_two(difficulty, hard, 1, sizeof(difficulty), sizeof(hard));
+            quicksleep(2000000);
+            blink_select(1, sizeof(difficulty), sizeof(hard));
+            if (((controller_input_a >> 4) & 1)
+            || ((controller_input_b >> 4) & 1))
+            {
+              while(optloop == 0)
+              {
+                options_menu_two(difficulty, god, 1, sizeof(difficulty), sizeof(god));
+                quicksleep(2000000);
+                blink_select(1, sizeof(difficulty), sizeof(god));
+                if (((controller_input_a >> 4) & 1)
+                || ((controller_input_b >> 4) & 1))
+                {
+                  while(optloop == 0)
+                  {
+                    options_menu_two(difficulty, easy, 1, sizeof(difficulty), sizeof(easy));
+                    quicksleep(2000000);
+                    blink_select(1, sizeof(difficulty), sizeof(easy));
+                    if (((controller_input_a >> 4) & 1)
+                    || ((controller_input_b >> 4) & 1))
+                    {
+                      optloop = 1;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+
+
+    if (((controller_input_a >> 5) & 1)			     // if player left B is pressed
   	|| ((controller_input_b >> 5) & 1))			     // if player right B is pressed
     {
       screen_clear();
-      while(1)
+      in_options = 0;
+      in_menu = 1;
+      while(in_menu)
       {
         start_menu();
     		select_option();
@@ -145,6 +340,7 @@ void options_menu()
     }
   }
 }
+
 
 void menu_select_1p(void)
 {
@@ -269,10 +465,10 @@ void menu_select_opt(void)
     spi_send_recv(font[(0 + k)]);
 }
 
+
 void select_option(void)
 {
-  if (((input_get_buttons() >> 2) & 1)          // if button 3 is pressed
-  	|| ((controller_input_a >> 3) & 1)			    // if player left START is pressed
+  if (((controller_input_a >> 3) & 1)			    // if player left START is pressed
   	|| ((controller_input_a >> 6) & 1)			    // if player left A is pressed
   	|| ((controller_input_b >> 3) & 1)			    // if player right START is pressed
   	|| ((controller_input_b >> 6) & 1))			    // if player right A is pressed
@@ -289,23 +485,23 @@ void select_option(void)
     	// -- Scoreboard
     	display_left_score_update();
     	display_right_score_update();
-    	
+
     	// Get stuck here while in game
       while(in_game)
       {
         quicksleep(10);
       }
-      
+
       // Get stuck here while quitting (so the game doesn't start again immediately)
   		while ((controller_input_a >> 6) & 1)			  // if player left A is pressed
       {
         quicksleep(10);
       }
-      
+
       // Clear screen after game is done
       screen_clear();
     }
-  	
+
     if(option == 1)                           // if arrow points to 2-player mode
     {
       screen_clear();
@@ -318,20 +514,20 @@ void select_option(void)
     	// -- Scoreboard
     	display_left_score_update();
     	display_right_score_update();
-    	
+
     	// Get stuck here while in game
       while(in_game)
       {
         quicksleep(10);
       }
-      
+
       // Get stuck here while quitting (so the game doesn't start again immediately)
   		while (((controller_input_a >> 6) & 1)			  // if player left A is pressed
   		|| ((controller_input_b >> 6) & 1))			    	// if player right A is pressed
       {
         quicksleep(10);
       }
-      
+
       // Clear screen after game is done
       screen_clear();
     }
@@ -341,9 +537,11 @@ void select_option(void)
       screen_clear();
       options_menu();
       check_buttons();
+      in_options = 1;
     }
   }
 }
+
 
 void check_buttons(void)
 {
