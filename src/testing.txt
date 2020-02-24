@@ -1,0 +1,35 @@
+  uint8_t cur_option = 0;
+  
+  while(in_options)
+  {
+  	if(cur_option == 0) {
+  		options_menu_two(paddle_size, pad_size_medium, 0, sizeof(paddle_size), sizeof(pad_size_medium));
+    	quicksleep(2000000);
+    	blink_select(0, sizeof(paddle_size), sizeof(pad_size_medium));
+  	} else if(cur_option == 1) {
+  		options_menu_two(paddle_size, pad_size_large, 0, sizeof(paddle_size), sizeof(pad_size_large));
+	    quicksleep(2000000);
+	    blink_select(0, sizeof(paddle_size), sizeof(pad_size_large));
+  		
+		} else if(cur_option == 2) {
+		  options_menu_two(paddle_size, pad_size_small, 0, sizeof(paddle_size), sizeof(pad_size_small));
+		  quicksleep(2000000);
+		  blink_select(0, sizeof(paddle_size), sizeof(pad_size_small));
+  		
+  	}
+  	
+    if (((controller_input_a >> 4) & 1)                                               // if SELECT is pressed
+    || ((controller_input_b >> 4) & 1))			                                          // if SELECT is pressed
+    {
+    	cur_option++;
+    	if(cur_option > 2)
+    		cur_option = 0;
+    		
+    	while(((controller_input_a >> 4) & 1) || ((controller_input_b >> 4) & 1)) {
+    		// Wait here until key is released
+    		quicksleep(10);
+    	}
+    	
+    }
+  	
+  }
