@@ -47,6 +47,7 @@ void frame_init(void);
 void frame_update(void);
 
 // Menu
+/*
 extern char menu_gametitle[16];
 extern char menu_oneplayer[2];
 extern char menu_twoplayer[2];
@@ -70,6 +71,7 @@ extern char diff_normal[6];
 extern char diff_hard[4];
 extern char diff_godmode[7];
 extern char diff_easy[4];
+*/
 void start_menu(void);
 void options_menu_one(char arr[], int row, int len);
 void options_menu_two(char arr1[], char arr2[], int row, int len1, int len2);

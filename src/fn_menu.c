@@ -2,33 +2,13 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "project.h"
 
-char menu_gametitle[] = "PONGYANG EXTREME";
-char menu_oneplayer[] = "1P";
-char menu_twoplayer[] = "2P";
-char menu_options[] = "OPT";
-char paddle_size[] = "PAD SIZE:";
-char pad_size_small[] = "SMALL";
-char pad_size_medium[] = "MED";
-char pad_size_large[] = "LARGE";
-char opt_ball_speed[] = "BALL SPEED:";
-char opt_ball_speed_fast[] = "FAST";
-char opt_ball_speed_slow[] = "SLOW";
-char ball_size[] = "BALL SIZE:";
-char ball_size_2x2[] = "2x2";
-char ball_size_4x4[] = "4x4";
-char ball_size_6x6[] = "6x6";
-char game_count_down[] = "321GO!";
-char game_difficulty[] = "DIFF:";
-char diff_normal[] = "NORMAL";
-char diff_hard[] = "HARD";
-char diff_godmode[] = "GODMODE";
-char diff_easy[] = "EASY";
-int selected_option;
-int button_press;
-int in_menu;
-int in_options;
-int option_row;
-int option_loop;
+
+uint8_t selected_option;
+uint8_t button_press;
+uint8_t in_menu;
+uint8_t in_options;
+// uint8_t option_row;
+// uint8_t option_loop;
 
 
 void options_menu_one(char arr[], int row, int len)
@@ -92,6 +72,7 @@ void options_menu_two(char arr1[], char arr2[], int row, int len1, int len2)
 
 void game_countdown(void)
 {
+  char game_count_down[] = "321GO!";
   int j, k, c;
 
   for(j = 0; j < 3; j++)
@@ -131,7 +112,12 @@ void game_countdown(void)
 
 void start_menu(void)
 {
-  options_menu_one(menu_gametitle, 0, sizeof(menu_gametitle));
+  char menu_gametitle[] = "PONGYANG EXTREME";
+  char menu_oneplayer[] = "1P";
+  char menu_twoplayer[] = "2P";
+  char menu_options[] = "OPT";
+
+  options_menu_one(menu_gametitle, 0, 16);
   options_menu_two(menu_oneplayer, menu_twoplayer, 2, sizeof(menu_oneplayer), sizeof(menu_twoplayer));
   options_menu_one(menu_options, 3, sizeof(menu_options));
 }
@@ -161,50 +147,110 @@ void blink_select(int row, int len1, int len2)
 
 void options_menu(void)
 {
+  char paddle_size[] = "PAD SIZE:";
+  char pad_size_small[] = "SMALL";
+  char pad_size_medium[] = "MED";
+  char pad_size_large[] = "LARGE";
+  char opt_ball_speed[] = "BALL SPD:";
+  char opt_ball_speed_fast[] = "FAST";
+  char opt_ball_speed_slow[] = "SLOW";
+  char ball_size[] = "BALL SIZE:";
+  char ball_size_2x2[] = "2x2";
+  char ball_size_4x4[] = "4x4";
+  char ball_size_6x6[] = "6x6";
+  char game_difficulty[] = "DIFF:";
+  char diff_normal[] = "NORMAL";
+  char diff_hard[] = "HARD";
+  char diff_godmode[] = "GODMODE";
+  char diff_easy[] = "EASY";
+  uint8_t cur_option;
+
   options_menu_two(paddle_size, pad_size_medium, 0, sizeof(paddle_size), sizeof(pad_size_medium));
   options_menu_two(ball_size, ball_size_2x2, 1, sizeof(ball_size), sizeof(ball_size_2x2));
   options_menu_two(opt_ball_speed, opt_ball_speed_fast, 2, sizeof(opt_ball_speed), sizeof(opt_ball_speed_fast));
   options_menu_two(game_difficulty, diff_normal, 3, sizeof(game_difficulty), sizeof(diff_normal));
 
+
+/*
+  in_options = 1;
   while(in_options)
   {
-    while(option_row == 0)
+  	if(cur_option == 0)
     {
-      option_loop = 0;
-      while(option_loop == 0)                                                                      // while pad size is selected
+  		options_menu_two(paddle_size, pad_size_medium, 0, sizeof(paddle_size), sizeof(pad_size_medium));
+    	quicksleep(2000000);
+    	blink_select(0, sizeof(paddle_size), sizeof(pad_size_medium));
+  	}
+    else if(cur_option == 1)
+    {
+  		options_menu_two(paddle_size, pad_size_large, 0, sizeof(paddle_size), sizeof(pad_size_large));
+	    quicksleep(2000000);
+	    blink_select(0, sizeof(paddle_size), sizeof(pad_size_large));
+    }
+    else if(cur_option == 2)
+    {
+		  options_menu_two(paddle_size, pad_size_small, 0, sizeof(paddle_size), sizeof(pad_size_small));
+		  quicksleep(2000000);
+		  blink_select(0, sizeof(paddle_size), sizeof(pad_size_small));
+    }
+
+    if (((controller_input_a >> 4) & 1)                                               // if SELECT is pressed
+    || ((controller_input_b >> 4) & 1))			                                          // if SELECT is pressed
+    {
+    	cur_option++;
+    	if(cur_option > 2)
+    		cur_option = 0;
+
+    	while(((controller_input_a >> 4) & 1) || ((controller_input_b >> 4) & 1))
       {
-        options_menu_two(paddle_size, pad_size_medium, 0, sizeof(paddle_size), sizeof(pad_size_medium));
-        quicksleep(2000000);
-        blink_select(0, sizeof(paddle_size), sizeof(pad_size_medium));                              // first option blinking (pad_size_medium)
-        if (((controller_input_a >> 4) & 1)                                               // if SELECT is pressed
-        || ((controller_input_b >> 4) & 1))			                                          // if SELECT is pressed
+    		// Wait here until key is released
+    		quicksleep(10);
+    	}
+    }
+  }*/
+}
+
+/*
+  option_row = 0;
+  in_options = 1;
+
+  while(option_row == 0)
+  {
+    option_loop = 0;
+    while(option_loop == 0)                                                             // while pad size is selected
+    {
+      options_menu_two(paddle_size, pad_size_medium, 0, sizeof(paddle_size), sizeof(pad_size_medium));
+      quicksleep(2000000);
+      blink_select(0, sizeof(paddle_size), sizeof(pad_size_medium));                    // first option blinking (pad_size_medium)
+      if (((controller_input_a >> 4) & 1)                                               // if SELECT is pressed
+      || ((controller_input_b >> 4) & 1))			                                          // if SELECT is pressed
+      {
+        while(option_loop == 0)
         {
-          while(option_loop == 0)
+          options_menu_two(paddle_size, pad_size_large, 0, sizeof(paddle_size), sizeof(pad_size_large));
+          quicksleep(2000000);
+          blink_select(0, sizeof(paddle_size), sizeof(pad_size_large));
+          if (((controller_input_a >> 4) & 1)
+          || ((controller_input_b >> 4) & 1))
           {
-            options_menu_two(paddle_size, pad_size_large, 0, sizeof(paddle_size), sizeof(pad_size_large));
-            quicksleep(2000000);
-            blink_select(0, sizeof(paddle_size), sizeof(pad_size_large));
-            if (((controller_input_a >> 4) & 1)
-            || ((controller_input_b >> 4) & 1))
+            while(option_loop == 0)
             {
-              while(option_loop == 0)
+              options_menu_two(paddle_size, pad_size_small, 0, sizeof(paddle_size), sizeof(pad_size_small));
+              quicksleep(2000000);
+              blink_select(0, sizeof(paddle_size), sizeof(pad_size_small));
+              if (((controller_input_a >> 4) & 1)
+              || ((controller_input_b >> 4) & 1))
               {
-                options_menu_two(paddle_size, pad_size_small, 0, sizeof(paddle_size), sizeof(pad_size_small));
-                quicksleep(2000000);
-                blink_select(0, sizeof(paddle_size), sizeof(pad_size_small));
-                if (((controller_input_a >> 4) & 1)
-                || ((controller_input_b >> 4) & 1))
-                {
-                  option_loop = 1;
-                }
+                option_loop = 1;
               }
             }
           }
         }
       }
     }
+  }
 
-    /*
+
     while(option_row == 1)
     {
       option_loop = 0;
@@ -323,8 +369,8 @@ void options_menu(void)
       }
     }
 
-    */
-    if (((controller_input_a >> 5) & 1)			     // if player left B is pressed
+
+    /*if (((controller_input_a >> 5) & 1)			     // if player left B is pressed
   	|| ((controller_input_b >> 5) & 1))			     // if player right B is pressed
     {
       screen_clear();
@@ -337,8 +383,8 @@ void options_menu(void)
     		check_buttons();
       }
     }
-  }
 }
+*/
 
 
 
@@ -468,7 +514,7 @@ void menu_select_opt(void)
 
 void select_option(void)
 {
-  if (((controller_input_a >> 3) & 1)			    // if player left START is pressed
+  if (((controller_input_a >> 3) & 1)			      // if player left START is pressed
   	|| ((controller_input_a >> 6) & 1)			    // if player left A is pressed
   	|| ((controller_input_b >> 3) & 1)			    // if player right START is pressed
   	|| ((controller_input_b >> 6) & 1))			    // if player right A is pressed
@@ -536,8 +582,7 @@ void select_option(void)
     {
       screen_clear();
       options_menu();
-      check_buttons();
-      in_options = 1;
+      //check_buttons();          // probably not needed
     }
   }
 }

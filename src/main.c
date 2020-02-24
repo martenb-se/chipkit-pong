@@ -62,18 +62,18 @@ int main()
 
 	// Enable inputs and inputtimers
 	input_init();
-	
+
 	// Enable timer for frames
 	frame_init();
 
 	// Enable interrupts
 	enable_interrupt();
 
+	start_menu();					// not needed in while loop
 	while(1)
 	{
-		start_menu();
-		select_option();
 		check_buttons();
+		select_option();
 	}
 
 	/*
@@ -90,7 +90,7 @@ int main()
 		// Do nothing
 		quicksleep(10);
 	}
-	
+
 	*/
 
 }
