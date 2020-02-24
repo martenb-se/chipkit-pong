@@ -2,31 +2,33 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "project.h"
 
-char gametitle[] = "PONGYANG EXTREME";
-char oneplayer[] = "1P";
-char twoplayer[] = "2P";
-char options[] = "OPT";
-char paddlesize[] = "PAD SIZE:";
-char ballspeed[] = "BALL SPEED:";
-char fast[] = "FAST";
-char slow[] = "SLOW";
-char ballsize[] = "BALL SIZE:";
-char small[] = "SMALL";
-char medium[] = "MED";
-char large[] = "LARGE";
-char twobytwo[] = "2x2";
-char fourbyfour[] = "4x4";
-char sixbysix[] = "6x6";
-char countdown[] = "321GO!";
-char difficulty[] = "DIFF:";
-char normal[] = "NORMAL";
-char hard[] = "HARD";
-char god[] = "GOD";
-char easy[] = "EASY";
-int option;
-int button;
+char menu_gametitle[] = "PONGYANG EXTREME";
+char menu_oneplayer[] = "1P";
+char menu_twoplayer[] = "2P";
+char menu_options[] = "OPT";
+char paddle_size[] = "PAD SIZE:";
+char pad_size_small[] = "SMALL";
+char pad_size_medium[] = "MED";
+char pad_size_large[] = "LARGE";
+char opt_ball_speed[] = "BALL SPEED:";
+char opt_ball_speed_fast[] = "FAST";
+char opt_ball_speed_slow[] = "SLOW";
+char ball_size[] = "BALL SIZE:";
+char ball_size_2x2[] = "2x2";
+char ball_size_4x4[] = "4x4";
+char ball_size_6x6[] = "6x6";
+char game_count_down[] = "321GO!";
+char game_difficulty[] = "DIFF:";
+char diff_normal[] = "NORMAL";
+char diff_hard[] = "HARD";
+char diff_godmode[] = "GODMODE";
+char diff_easy[] = "EASY";
+int selected_option;
+int button_press;
 int in_menu;
 int in_options;
+int option_row;
+int option_loop;
 
 
 void options_menu_one(char arr[], int row, int len)
@@ -102,7 +104,7 @@ void game_countdown(void)
     spi_send_recv(59);
     spi_send_recv(67);
     DISPLAY_CHANGE_TO_DATA_MODE;
-    c = countdown[j];
+    c = game_count_down[j];
     for(k = 0; k < 8; k++)
       spi_send_recv(font[(c*8 + k)]);
     quicksleep(3000000);
@@ -119,7 +121,7 @@ void game_countdown(void)
     DISPLAY_CHANGE_TO_DATA_MODE;
     for(j = 3; j < 6; j++)
     {
-      c = countdown[j];
+      c = game_count_down[j];
       for(k = 0; k < 8; k++)
         spi_send_recv(font[(c*8 + k)]);
     }
@@ -129,9 +131,9 @@ void game_countdown(void)
 
 void start_menu(void)
 {
-  options_menu_one(gametitle, 0, sizeof(gametitle));
-  options_menu_two(oneplayer, twoplayer, 2, sizeof(oneplayer), sizeof(twoplayer));
-  options_menu_one(options, 3, sizeof(options));
+  options_menu_one(menu_gametitle, 0, sizeof(menu_gametitle));
+  options_menu_two(menu_oneplayer, menu_twoplayer, 2, sizeof(menu_oneplayer), sizeof(menu_twoplayer));
+  options_menu_one(menu_options, 3, sizeof(menu_options));
 }
 
 
@@ -159,43 +161,41 @@ void blink_select(int row, int len1, int len2)
 
 void options_menu(void)
 {
-  int opt, optloop;
-
-  options_menu_two(paddlesize, medium, 0, sizeof(paddlesize), sizeof(medium));
-  options_menu_two(ballsize, twobytwo, 1, sizeof(ballsize), sizeof(twobytwo));
-  options_menu_two(ballspeed, fast, 2, sizeof(ballspeed), sizeof(fast));
-  options_menu_two(difficulty, normal, 3, sizeof(difficulty), sizeof(normal));
+  options_menu_two(paddle_size, pad_size_medium, 0, sizeof(paddle_size), sizeof(pad_size_medium));
+  options_menu_two(ball_size, ball_size_2x2, 1, sizeof(ball_size), sizeof(ball_size_2x2));
+  options_menu_two(opt_ball_speed, opt_ball_speed_fast, 2, sizeof(opt_ball_speed), sizeof(opt_ball_speed_fast));
+  options_menu_two(game_difficulty, diff_normal, 3, sizeof(game_difficulty), sizeof(diff_normal));
 
   while(in_options)
   {
-    while(opt == 0)
+    while(option_row == 0)
     {
-      optloop = 0;
-      while(optloop == 0)                                                                      // while pad size is selected
+      option_loop = 0;
+      while(option_loop == 0)                                                                      // while pad size is selected
       {
-        options_menu_two(paddlesize, medium, 0, sizeof(paddlesize), sizeof(medium));
+        options_menu_two(paddle_size, pad_size_medium, 0, sizeof(paddle_size), sizeof(pad_size_medium));
         quicksleep(2000000);
-        blink_select(0, sizeof(paddlesize), sizeof(medium));                              // first option blinking (medium)
+        blink_select(0, sizeof(paddle_size), sizeof(pad_size_medium));                              // first option blinking (pad_size_medium)
         if (((controller_input_a >> 4) & 1)                                               // if SELECT is pressed
         || ((controller_input_b >> 4) & 1))			                                          // if SELECT is pressed
         {
-          while(optloop == 0)
+          while(option_loop == 0)
           {
-            options_menu_two(paddlesize, large, 0, sizeof(paddlesize), sizeof(large));
+            options_menu_two(paddle_size, pad_size_large, 0, sizeof(paddle_size), sizeof(pad_size_large));
             quicksleep(2000000);
-            blink_select(0, sizeof(paddlesize), sizeof(large));
+            blink_select(0, sizeof(paddle_size), sizeof(pad_size_large));
             if (((controller_input_a >> 4) & 1)
             || ((controller_input_b >> 4) & 1))
             {
-              while(optloop == 0)
+              while(option_loop == 0)
               {
-                options_menu_two(paddlesize, small, 0, sizeof(paddlesize), sizeof(small));
+                options_menu_two(paddle_size, pad_size_small, 0, sizeof(paddle_size), sizeof(pad_size_small));
                 quicksleep(2000000);
-                blink_select(0, sizeof(paddlesize), sizeof(small));
+                blink_select(0, sizeof(paddle_size), sizeof(pad_size_small));
                 if (((controller_input_a >> 4) & 1)
                 || ((controller_input_b >> 4) & 1))
                 {
-                  optloop = 1;
+                  option_loop = 1;
                 }
               }
             }
@@ -204,35 +204,35 @@ void options_menu(void)
       }
     }
 
-
-    while(opt == 1)
+    /*
+    while(option_row == 1)
     {
-      optloop = 0;
-      while(optloop == 0)
+      option_loop = 0;
+      while(option_loop == 0)
       {
-        options_menu_two(ballsize, twobytwo, 1, sizeof(ballsize), sizeof(twobytwo));
+        options_menu_two(ball_size, ball_size_2x2, 1, sizeof(ball_size), sizeof(ball_size_2x2));
         quicksleep(2000000);
-        blink_select(1, sizeof(ballsize), sizeof(twobytwo));
+        blink_select(1, sizeof(ball_size), sizeof(ball_size_2x2));
         if (((controller_input_a >> 4) & 1)
         || ((controller_input_b >> 4) & 1))
         {
-          while(optloop == 0)
+          while(option_loop == 0)
           {
-            options_menu_two(ballsize, fourbyfour, 1, sizeof(ballsize), sizeof(fourbyfour));
+            options_menu_two(ball_size, ball_size_4x4, 1, sizeof(ball_size), sizeof(ball_size_4x4));
             quicksleep(2000000);
-            blink_select(1, sizeof(ballsize), sizeof(fourbyfour));
+            blink_select(1, sizeof(ball_size), sizeof(ball_size_4x4));
             if (((controller_input_a >> 4) & 1)
             || ((controller_input_b >> 4) & 1))
             {
-              while(optloop == 0)
+              while(option_loop == 0)
               {
-                options_menu_two(ballsize, sixbysix, 1, sizeof(ballsize), sizeof(sixbysix));
+                options_menu_two(ball_size, ball_size_6x6, 1, sizeof(ball_size), sizeof(ball_size_6x6));
                 quicksleep(2000000);
-                blink_select(1, sizeof(ballsize), sizeof(sixbysix));
+                blink_select(1, sizeof(ball_size), sizeof(ball_size_6x6));
                 if (((controller_input_a >> 4) & 1)
                 || ((controller_input_b >> 4) & 1))
                 {
-                  optloop = 1;
+                  option_loop = 1;
                 }
               }
             }
@@ -241,34 +241,34 @@ void options_menu(void)
       }
     }
 
-    while(opt == 2)
+    while(option_row == 2)
     {
-      optloop = 0;
-      while(optloop == 0)
+      option_loop = 0;
+      while(option_loop == 0)
       {
-        options_menu_two(ballspeed, normal, 1, sizeof(ballspeed), sizeof(normal));
+        options_menu_two(opt_ball_speed, diff_normal, 1, sizeof(opt_ball_speed), sizeof(diff_normal));
         quicksleep(2000000);
-        blink_select(1, sizeof(ballspeed), sizeof(normal));
+        blink_select(1, sizeof(opt_ball_speed), sizeof(diff_normal));
         if (((controller_input_a >> 4) & 1)
         || ((controller_input_b >> 4) & 1))
         {
-          while(optloop == 0)
+          while(option_loop == 0)
           {
-            options_menu_two(ballspeed, fast, 1, sizeof(ballspeed), sizeof(fast));
+            options_menu_two(opt_ball_speed, opt_ball_speed_fast, 1, sizeof(opt_ball_speed), sizeof(opt_ball_speed_fast));
             quicksleep(2000000);
-            blink_select(1, sizeof(ballspeed), sizeof(fast));
+            blink_select(1, sizeof(opt_ball_speed), sizeof(opt_ball_speed_fast));
             if (((controller_input_a >> 4) & 1)
             || ((controller_input_b >> 4) & 1))
             {
-              while(optloop == 0)
+              while(option_loop == 0)
               {
-                options_menu_two(ballspeed, slow, 1, sizeof(ballspeed), sizeof(slow));
+                options_menu_two(opt_ball_speed, opt_ball_speed_slow, 1, sizeof(opt_ball_speed), sizeof(opt_ball_speed_slow));
                 quicksleep(2000000);
-                blink_select(1, sizeof(ballspeed), sizeof(slow));
+                blink_select(1, sizeof(opt_ball_speed), sizeof(opt_ball_speed_slow));
                 if (((controller_input_a >> 4) & 1)
                 || ((controller_input_b >> 4) & 1))
                 {
-                  optloop = 1;
+                  option_loop = 1;
                 }
               }
             }
@@ -277,42 +277,42 @@ void options_menu(void)
       }
     }
 
-    while(opt == 3)
+    while(option_row == 3)
     {
-      optloop = 0;
-      while(optloop == 0)
+      option_loop = 0;
+      while(option_loop == 0)
       {
-        options_menu_two(difficulty, normal, 1, sizeof(difficulty), sizeof(normal));
+        options_menu_two(game_difficulty, diff_normal, 1, sizeof(game_difficulty), sizeof(diff_normal));
         quicksleep(2000000);
-        blink_select(1, sizeof(difficulty), sizeof(normal));
+        blink_select(1, sizeof(game_difficulty), sizeof(diff_normal));
         if (((controller_input_a >> 4) & 1)
         || ((controller_input_b >> 4) & 1))
         {
-          while(optloop == 0)
+          while(option_loop == 0)
           {
-            options_menu_two(difficulty, hard, 1, sizeof(difficulty), sizeof(hard));
+            options_menu_two(game_difficulty, diff_hard, 1, sizeof(game_difficulty), sizeof(diff_hard));
             quicksleep(2000000);
-            blink_select(1, sizeof(difficulty), sizeof(hard));
+            blink_select(1, sizeof(game_difficulty), sizeof(diff_hard));
             if (((controller_input_a >> 4) & 1)
             || ((controller_input_b >> 4) & 1))
             {
-              while(optloop == 0)
+              while(option_loop == 0)
               {
-                options_menu_two(difficulty, god, 1, sizeof(difficulty), sizeof(god));
+                options_menu_two(game_difficulty, diff_godmode, 1, sizeof(game_difficulty), sizeof(diff_godmode));
                 quicksleep(2000000);
-                blink_select(1, sizeof(difficulty), sizeof(god));
+                blink_select(1, sizeof(game_difficulty), sizeof(diff_godmode));
                 if (((controller_input_a >> 4) & 1)
                 || ((controller_input_b >> 4) & 1))
                 {
-                  while(optloop == 0)
+                  while(option_loop == 0)
                   {
-                    options_menu_two(difficulty, easy, 1, sizeof(difficulty), sizeof(easy));
+                    options_menu_two(game_difficulty, diff_easy, 1, sizeof(game_difficulty), sizeof(diff_easy));
                     quicksleep(2000000);
-                    blink_select(1, sizeof(difficulty), sizeof(easy));
+                    blink_select(1, sizeof(game_difficulty), sizeof(diff_easy));
                     if (((controller_input_a >> 4) & 1)
                     || ((controller_input_b >> 4) & 1))
                     {
-                      optloop = 1;
+                      option_loop = 1;
                     }
                   }
                 }
@@ -323,8 +323,7 @@ void options_menu(void)
       }
     }
 
-
-
+    */
     if (((controller_input_a >> 5) & 1)			     // if player left B is pressed
   	|| ((controller_input_b >> 5) & 1))			     // if player right B is pressed
     {
@@ -340,6 +339,7 @@ void options_menu(void)
     }
   }
 }
+
 
 
 void menu_select_1p(void)
@@ -473,7 +473,7 @@ void select_option(void)
   	|| ((controller_input_b >> 3) & 1)			    // if player right START is pressed
   	|| ((controller_input_b >> 6) & 1))			    // if player right A is pressed
   {
-  	if(option == 0)                           // if arrow points to 1-player mode
+  	if(selected_option == 0)                           // if arrow points to 1-player mode
     {
       screen_clear();
       game_countdown();
@@ -502,7 +502,7 @@ void select_option(void)
       screen_clear();
     }
 
-    if(option == 1)                           // if arrow points to 2-player mode
+    if(selected_option == 1)                           // if arrow points to 2-player mode
     {
       screen_clear();
       game_countdown();
@@ -532,7 +532,7 @@ void select_option(void)
       screen_clear();
     }
 
-    if(option == 2)                           // if arrow points to options
+    if(selected_option == 2)                           // if arrow points to options
     {
       screen_clear();
       options_menu();
@@ -545,30 +545,28 @@ void select_option(void)
 
 void check_buttons(void)
 {
-  if (((input_get_buttons() >> 3) & 1)       // if button 4 is pressed
-  	|| ((controller_input_a >> 4) & 1)			 // if player left SELECT is pressed
+  if (((controller_input_a >> 4) & 1)			 // if player left SELECT is pressed
   	|| ((controller_input_b >> 4) & 1))			 // if player right SELECT is pressed
   {
-    button = 1;
-    while(button == 1)
+    button_press = 1;
+    while(button_press == 1)
     {
-      if (((!(input_get_buttons() >> 3) & 1))       // if button 4 is pressed
-  			&& (!(controller_input_a >> 4) & 1)					// if player left SELECT is pressed
+      if ((!(controller_input_a >> 4) & 1)					// if player left SELECT is pressed
   			&& (!(controller_input_b >> 4) & 1))				// if player right SELECT is pressed
       {
-        option++;
-        if(option > 2)
-          option = 0;
-        button = 0;
+        selected_option++;
+        if(selected_option > 2)
+          selected_option = 0;
+        button_press = 0;
       }
     }
   }
 
-  if(option == 0)
+  if(selected_option == 0)
     menu_select_1p();
-  if(option == 1)
+  if(selected_option == 1)
     menu_select_2p();
-  if(option == 2)
+  if(selected_option == 2)
     menu_select_opt();
 }
 
@@ -578,21 +576,21 @@ void start_menu(void)
 {
   int j, k, c;
 
-  // gametitle label
+  // menu_gametitle label
   DISPLAY_CHANGE_TO_COMMAND_MODE;
   spi_send_recv(0x22);
   spi_send_recv(0);
   spi_send_recv(0x0);
   spi_send_recv(0x10);
   DISPLAY_CHANGE_TO_DATA_MODE;
-  for(j = 0; j < sizeof(gametitle); j++)
+  for(j = 0; j < sizeof(menu_gametitle); j++)
   {
-		c = gametitle[j];
+		c = menu_gametitle[j];
 		for(k = 0; k < 8; k++)
       spi_send_recv(font[(c*8 + k)]);
 	}
 
-  // oneplayer label
+  // menu_oneplayer label
   DISPLAY_CHANGE_TO_COMMAND_MODE;
   spi_send_recv(0x22);
   spi_send_recv(2);
@@ -601,14 +599,14 @@ void start_menu(void)
   spi_send_recv(32);
   spi_send_recv(48);
   DISPLAY_CHANGE_TO_DATA_MODE;
-  for(j = 0; j < sizeof(oneplayer); j++)
+  for(j = 0; j < sizeof(menu_oneplayer); j++)
   {
-		c = oneplayer[j];
+		c = menu_oneplayer[j];
 		for(k = 0; k < 8; k++)
       spi_send_recv(font[(c*8 + k)]);
 	}
 
-  // twoplayer label
+  // menu_twoplayer label
   DISPLAY_CHANGE_TO_COMMAND_MODE;
   spi_send_recv(0x22);
   spi_send_recv(2);
@@ -617,9 +615,9 @@ void start_menu(void)
   spi_send_recv(80);
   spi_send_recv(96);
   DISPLAY_CHANGE_TO_DATA_MODE;
-  for(j = 0; j < sizeof(twoplayer); j++)
+  for(j = 0; j < sizeof(menu_twoplayer); j++)
   {
-		c = twoplayer[j];
+		c = menu_twoplayer[j];
 		for(k = 0; k < 8; k++)
       spi_send_recv(font[(c*8 + k)]);
 	}
