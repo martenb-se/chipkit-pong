@@ -11,6 +11,33 @@ uint8_t in_options;
 // uint8_t option_loop;
 
 
+void menu_layout(char arr[], uint8_t len, uint8_t row, uint8_t sect)
+{
+  uint8_t j, k, l, c;
+  l = (64 - len*8) / 2;
+  if(sect == 2)
+    l = l + 64;
+  if(sect == 0)
+    l = 0;
+
+  DISPLAY_CHANGE_TO_COMMAND_MODE;
+  spi_send_recv(0x22);
+  spi_send_recv(row);
+  spi_send_recv(0x0);
+  spi_send_recv(0x21);
+  spi_send_recv(l);
+  spi_send_recv(l + len*8 - 1);
+  DISPLAY_CHANGE_TO_DATA_MODE;
+  for(j = 0; j < len; j++)
+  {
+    c = arr[j];
+    for(k = 0; k < 8; k++)
+      spi_send_recv(font[(c*8 + k)]);
+  }
+}
+
+/*
+
 void options_menu_one(char arr[], uint8_t row, uint8_t len)
 {
   uint8_t j, k, l, c;
@@ -70,6 +97,8 @@ void options_menu_two(char arr1[], char arr2[], uint8_t row, uint8_t len1, uint8
   }
 }
 
+*/
+
 void game_countdown(void)
 {
   char game_count_down[] = "321GO!";
@@ -116,13 +145,16 @@ void start_menu(void)
   char menu_oneplayer[] = "1P";
   char menu_twoplayer[] = "2P";
   char menu_options[] = "OPT";
+  char menu_credits[] = "CRED";
 
-  options_menu_one(menu_gametitle, 0, 16);
-  options_menu_two(menu_oneplayer, menu_twoplayer, 2, sizeof(menu_oneplayer), sizeof(menu_twoplayer));
-  options_menu_one(menu_options, 3, sizeof(menu_options));
+  menu_layout(menu_gametitle, 16, 0, 0);
+  menu_layout(menu_oneplayer, sizeof(menu_oneplayer), 2, 1);
+  menu_layout(menu_twoplayer, sizeof(menu_twoplayer), 2, 2);
+  menu_layout(menu_options, sizeof(menu_options), 3, 1);
+  menu_layout(menu_credits, sizeof(menu_credits), 3, 2);
 }
 
-
+/*
 void blink_select(uint8_t row, uint8_t len1, uint8_t len2)
 {
   uint8_t i, k, l;
@@ -143,21 +175,21 @@ void blink_select(uint8_t row, uint8_t len1, uint8_t len2)
   }
   quicksleep(2000000);
 }
-
+*/
 
 void options_menu(void)
 {
-  char paddle_size[] = "PAD SIZE:";
+  char paddle_size[] = "PAD SZ:";
   char pad_size_small[] = "SMALL";
   char pad_size_medium[] = "MED";
   char pad_size_large[] = "LARGE";
-  char opt_ball_speed[] = "BALL SPD:";
+  char opt_ball_speed[] = "B SPD:";
   char opt_ball_speed_fast[] = "FAST";
   char opt_ball_speed_slow[] = "SLOW";
-  char ball_size[] = "BALL SIZE:";
-  char ball_size_2x2[] = "2x2";
-  char ball_size_4x4[] = "4x4";
-  char ball_size_6x6[] = "6x6";
+  char opt_ball_size[] = "B SIZE:";
+  char opt_ball_size_2x2[] = "2x2";
+  char opt_ball_size_4x4[] = "4x4";
+  char opt_ball_size_6x6[] = "6x6";
   char game_difficulty[] = "DIFF:";
   char diff_normal[] = "NORMAL";
   char diff_hard[] = "HARD";
@@ -165,11 +197,15 @@ void options_menu(void)
   char diff_easy[] = "EASY";
   uint8_t cur_option;
 
-  options_menu_two(paddle_size, pad_size_medium, 0, sizeof(paddle_size), sizeof(pad_size_medium));
-  options_menu_two(ball_size, ball_size_2x2, 1, sizeof(ball_size), sizeof(ball_size_2x2));
-  options_menu_two(opt_ball_speed, opt_ball_speed_fast, 2, sizeof(opt_ball_speed), sizeof(opt_ball_speed_fast));
-  options_menu_two(game_difficulty, diff_normal, 3, sizeof(game_difficulty), sizeof(diff_normal));
-
+  menu_layout(paddle_size, sizeof(paddle_size), 0, 1);
+  menu_layout(pad_size_medium, sizeof(pad_size_medium), 0, 2);
+  menu_layout(opt_ball_size, sizeof(opt_ball_size), 1, 1);
+  menu_layout(opt_ball_size_2x2, sizeof(opt_ball_size_2x2), 1, 2);
+  menu_layout(opt_ball_speed, sizeof(opt_ball_speed), 2, 1);
+  menu_layout(opt_ball_speed_fast, sizeof(opt_ball_speed_fast), 2, 2);
+  menu_layout(game_difficulty, sizeof(game_difficulty), 3, 1);
+  menu_layout(diff_normal, sizeof(diff_normal), 3, 2);
+}
 
 /*
   in_options = 1;
@@ -207,10 +243,10 @@ void options_menu(void)
     		quicksleep(10);
     	}
     }
-  }*/
-}
+  }
 
-/*
+
+
   option_row = 0;
   in_options = 1;
 
@@ -370,7 +406,7 @@ void options_menu(void)
     }
 
 
-    /*if (((controller_input_a >> 5) & 1)			     // if player left B is pressed
+    if (((controller_input_a >> 5) & 1)			     // if player left B is pressed
   	|| ((controller_input_b >> 5) & 1))			     // if player right B is pressed
     {
       screen_clear();
@@ -386,22 +422,105 @@ void options_menu(void)
 }
 */
 
-void menu_arrow_select(void)
+void menu_select(uint8_t row1, uint8_t row2, uint8_t col1, uint8_t col2)
 {
-  uint8_t i, j, k;
+  uint8_t k;
 
-  // points arrow to 1P
+  // points arrow to here
   DISPLAY_CHANGE_TO_COMMAND_MODE;
   spi_send_recv(0x22);
-  spi_send_recv(2);
+  spi_send_recv(row1);
   spi_send_recv(0x0);
   spi_send_recv(0x21);
-  spi_send_recv(16);
-  spi_send_recv(24);
+  spi_send_recv(col1);
+  spi_send_recv(col1 + 8);
   DISPLAY_CHANGE_TO_DATA_MODE;
   for(k = 0; k < 8; k++)
     spi_send_recv(font[(1*8 + k)]);
 
+  // turns off arrow here
+  DISPLAY_CHANGE_TO_COMMAND_MODE;
+  spi_send_recv(0x22);
+  spi_send_recv(row1);
+  spi_send_recv(0x0);
+  spi_send_recv(0x21);
+  spi_send_recv(col2);
+  spi_send_recv(col2 + 8);
+  DISPLAY_CHANGE_TO_DATA_MODE;
+  for(k = 0; k < 8; k++)
+    spi_send_recv(font[(0 + k)]);
+
+  // turns off arrow here
+  DISPLAY_CHANGE_TO_COMMAND_MODE;
+  spi_send_recv(0x22);
+  spi_send_recv(row2);
+  spi_send_recv(0x0);
+  spi_send_recv(0x21);
+  spi_send_recv(col1);
+  spi_send_recv(col1 + 8);
+  DISPLAY_CHANGE_TO_DATA_MODE;
+  for(k = 0; k < 8; k++)
+    spi_send_recv(font[(0 + k)]);
+
+  // turns off arrow here
+  DISPLAY_CHANGE_TO_COMMAND_MODE;
+  spi_send_recv(0x22);
+  spi_send_recv(row2);
+  spi_send_recv(0x0);
+  spi_send_recv(0x21);
+  spi_send_recv(col2);
+  spi_send_recv(col2 + 8);
+  DISPLAY_CHANGE_TO_DATA_MODE;
+  for(k = 0; k < 8; k++)
+    spi_send_recv(font[(0 + k)]);
+}
+
+/*
+void menu_arrow_select(uint8_t row, uint8_t col1, uint8_t col2, uint8_t col3)
+{
+  uint8_t i, j, k, c;
+
+  row = prev_row;
+  col = prev_col;
+
+
+
+  static uint8_t count = 0;
+  static uint8_t col = 16;
+  uint8_t prev_col = 36;
+  prev_row = 3;
+  row = 2;
+  c = 0;
+
+  for(i = 0; i < 2; i++)
+  {
+    if(prev_row == 3)
+
+    // points arrow to 1P
+    DISPLAY_CHANGE_TO_COMMAND_MODE;
+    spi_send_recv(0x22);
+    spi_send_recv(row);
+    spi_send_recv(0x0);
+    spi_send_recv(0x21);
+    spi_send_recv(col);
+    spi_send_recv(col + 8);
+    DISPLAY_CHANGE_TO_DATA_MODE;
+    for(k = 0; k < 8; k++)
+      spi_send_recv(font[(c*8 + k)]);
+
+
+    count++;
+    if(count == 1)
+    {
+      row = 3;
+    }
+    c = 0;
+
+  }
+
+  row = 2;
+  col = col + 24;
+  count++;
 
 
 }
@@ -528,7 +647,7 @@ void menu_select_opt(void)
   for(k = 0; k < 8; k++)
     spi_send_recv(font[(0 + k)]);
 }
-
+*/
 
 void select_option(void)
 {
@@ -600,6 +719,8 @@ void select_option(void)
     {
       screen_clear();
       options_menu();
+      while(1)
+        quicksleep(10);
       //check_buttons();          // probably not needed
     }
   }
@@ -618,7 +739,7 @@ void check_buttons(void)
   			&& (!(controller_input_b >> 4) & 1))				// if player right SELECT is pressed
       {
         selected_option++;
-        if(selected_option > 2)
+        if(selected_option > 3)
           selected_option = 0;
         button_press = 0;
       }
@@ -626,11 +747,13 @@ void check_buttons(void)
   }
 
   if(selected_option == 0)
-    menu_select_1p();
+    menu_select(2, 3, 0, 64);   // 1P
   if(selected_option == 1)
-    menu_select_2p();
+    menu_select(2, 3, 64, 0);   // 2P
   if(selected_option == 2)
-    menu_select_opt();
+    menu_select(3, 2, 0, 64);   // OPT
+  if(selected_option == 3)
+    menu_select(3, 2, 64, 0);   // CRED
 }
 
 
