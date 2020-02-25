@@ -775,12 +775,8 @@ void select_option(void)
       game_countdown();
       screen_clear();
       // Initiation
-    	// - In game
-    	in_game = 1; // Activate game
-    	//playing_field_init(); // Initiate playing field
-    	// -- Scoreboard
-    	display_score(0,0);
-    	display_score(0,1);
+    	in_game = 1;
+    	playing_reset(0);
 
     	// Get stuck here while in game
       while(in_game)
@@ -796,6 +792,9 @@ void select_option(void)
 
       // Clear screen after game is done
       screen_clear();
+      
+      // Reload start menu
+      start_menu();
     }
 
     if(selected_option == 1)                           // if arrow points to 2-player mode
@@ -803,13 +802,10 @@ void select_option(void)
       screen_clear();
       game_countdown();
       screen_clear();
+      
       // Initiation
-    	// - In game
-    	in_game = 2; // Activate game
-    	//playing_field_init(); // Initiate playing field
-    	// -- Scoreboard
-    	display_score(0,0);
-    	display_score(0,1);
+    	in_game = 2;
+    	playing_reset(0);
 
     	// Get stuck here while in game
       while(in_game)
@@ -826,6 +822,9 @@ void select_option(void)
 
       // Clear screen after game is done
       screen_clear();
+      
+      // Reload start menu
+      start_menu();
     }
 
     if(selected_option == 2)                           // if arrow points to options

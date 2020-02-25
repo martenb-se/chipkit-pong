@@ -1,8 +1,3 @@
-#define MATH_ERRNO = 0;
-#define math_errhandling = 0;
-//#define errno = 0;
-extern int errno;
-
 #define DISPLAY_CHANGE_TO_COMMAND_MODE (PORTFCLR = 0x10)			// OLED data(1)/command(0) select 	- 0000 0000 0001 0000 (RF4 - PIN 39)
 #define DISPLAY_CHANGE_TO_DATA_MODE (PORTFSET = 0x10)					// OLED data(1)/command(0) select   -
 
@@ -17,69 +12,56 @@ extern int errno;
 
 #define PI 3.14159265
 
-void display_image(int x, const uint8_t *data);
+#define BIT_BUTTON_LEFT								1
+#define BIT_BUTTON_RIGHT							1
+#define BIT_BUTTON_UP									1
+#define BIT_BUTTON_DOWN								1
+#define BIT_BUTTON_START							1
+#define BIT_BUTTON_SELECT							1
+#define BIT_BUTTON_A									1
+#define BIT_BUTTON_B									1
+
+#define DATA_BUTTON_LEFT(ctrl_data)   ((ctrl_data >> BIT_BUTTON_LEFT) & 1)
+#define DATA_BUTTON_RIGHT(ctrl_data)  ((ctrl_data >> BIT_BUTTON_RIGHT) & 1)
+#define DATA_BUTTON_UP(ctrl_data)     ((ctrl_data >> BIT_BUTTON_UP) & 1)
+#define DATA_BUTTON_DOWN(ctrl_data)   ((ctrl_data >> BIT_BUTTON_DOWN) & 1)
+#define DATA_BUTTON_START(ctrl_data)  ((ctrl_data >> BIT_BUTTON_START) & 1)
+#define DATA_BUTTON_SELECT(ctrl_data) ((ctrl_data >> BIT_BUTTON_SELECT) & 1)
+#define DATA_BUTTON_A(ctrl_data)      ((ctrl_data >> BIT_BUTTON_A) & 1)
+#define DATA_BUTTON_B(ctrl_data)      ((ctrl_data >> BIT_BUTTON_B) & 1)
+
+// Error handling
+extern int errno;
+
+//
 void display_init(void);
-void display_string(int line, char *s);
-void display_update(void);
 uint8_t spi_send_recv(uint8_t data);
 void quicksleep(int cyc);
 
+//
 extern const uint8_t const font[128*8];
 extern const uint8_t const numbers_mini[11*4];
-extern char textbuffer[4][16];
 
 // Clear whole screen
 void screen_clear(void);
 
 // Main
 extern uint8_t in_game;
+unsigned int rand(void);
 
 // Input
 extern uint8_t controller_input_a;
 extern uint8_t controller_input_b;
 extern uint8_t controller_input_a_buffer;
 extern uint8_t controller_input_b_buffer;
-void input_init(void);
-int input_get_buttons(void);
 
-// Frames
-void frame_init(void);
+// Timers
+void timer_init(void);
 void frame_update(void);
 
 // Menu
 void select_option(void);
 void check_buttons(void);
-/*
-extern char menu_gametitle[16];
-extern char menu_oneplayer[2];
-extern char menu_twoplayer[2];
-extern char menu_options[3];
-// extern char credits[4];
-// extern char exit[4];
-extern char paddle_size[9];
-extern char pad_size_medium[3];
-extern char pad_size_large[5];
-extern char pad_size_small[5];
-extern char opt_ball_speed[11];
-extern char opt_ball_speed_fast[4];
-extern char opt_ball_speed_slow[4];
-extern char ball_size[10];
-extern char ball_size_2x2[3];
-extern char ball_size_4x4[3];
-extern char ball_size_6x6[3];
-extern char game_count_down[6];
-extern char game_difficulty[5];
-extern char diff_normal[6];
-extern char diff_hard[4];
-extern char diff_godmode[7];
-extern char diff_easy[4];
-*/
-
-
-// Scores
-extern uint8_t sc1;
-extern uint8_t sc2;
-void display_score(uint8_t sc, int on_right);
 
 // Playing
 extern uint8_t play_time_left;
@@ -103,7 +85,10 @@ extern uint8_t player_speeds[2];
 extern uint8_t player_cpu;
 extern uint8_t play_mode_timed;
 
-unsigned int rand(void);
+extern uint8_t sc1;
+extern uint8_t sc2;
+
+void display_score(uint8_t sc, int on_right);
 void playbuffer_clear(void);
 void play_xy_update(void);
 void play_xy_set(int x, int y);

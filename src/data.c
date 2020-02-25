@@ -2,8 +2,6 @@
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
 #include "project.h"
 
-char textbuffer[4][16];
-
 const uint8_t const numbers_mini[] = {
 	15, 9, 9, 15,
 	9, 15, 15, 1,

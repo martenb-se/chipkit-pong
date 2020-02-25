@@ -16,10 +16,6 @@
 int errno = 0;
 
 // States
-//uint8_t play_game_over = 0;										// Game over
-//uint8_t play_quit_init = 0;										// Initiate quit
-//uint8_t player_left_pause = 0;								// Pause: for player left
-//uint8_t player_right_pause = 0;								// Pause: for player right
 uint8_t play_time_left = 90;									// Time left to play
 /*
 
@@ -41,12 +37,8 @@ uint8_t play_state = 0b00000000;
 uint8_t play_state = 0;												// State of play
 
 // Input
-//uint8_t player_left_command = 0;							// Last command of left player
-//uint8_t player_right_command = 0;							// Last command of right player
-uint8_t player_commands[] = {0, 0};							// Last commands: left and right
-//uint8_t player_left_hold = 0;									// Number of frames left player has held its input
-//uint8_t player_right_hold = 0;								// Number of frames rught player has held its input
-uint8_t player_holds[] = {0, 0};								// Number of frames player has held its input: left and right
+uint8_t player_commands[] = {0, 0};						// Last commands: left and right
+uint8_t player_holds[] = {0, 0};							// Number of frames player has held its input: left and right
 
 // CPU
 uint8_t player_cpu_hold = 0;									// Number of frames CPU has held input
@@ -57,40 +49,52 @@ int play_timestamp = 0;												// Current timestamp in format: 12a34 (output
 
 // Positions
 uint8_t player_ball[] = {48, 16};							// Ball X/Y coordinates
-//uint8_t player_left = 16;											// Player left: Y coordinates
-//uint8_t player_right = 16;										// Player right: Y coordinates
 uint8_t player_coordinates[] = {16, 16};			// Player coordinates: left and right	
 
 // Movement
 double player_ball_movement_pointer = 0;			// Array Pointer for movement
-//uint8_t player_ball_x[96];										// Movement coordinates: X
-//uint8_t player_ball_y[96];										// Movement coordinates: Y
 uint8_t player_ball_movements[2][96];				  // Movement coordinates: X and Y
 double player_ball_direction = -1;						// Current direction of ball
 uint8_t ball_speed_temp = 2;									// Temporary Frames/Movement for ball
 
 // Customizable options
-uint8_t ball_size = 2;												// X*X
+uint8_t ball_size = 2;												// Ball size squared
 uint8_t ball_speed = 2;												// Frames/Movement for ball
-//uint8_t player_left_height = 8;								// Height in pixels
-//uint8_t player_right_height = 8;							// Height in pixels
 uint8_t player_heights[] = {8, 8};					  // Player heights in pixels: left and right	
-//uint8_t player_left_speed = 2;								// Frames/Movement for left player
-//uint8_t player_right_speed = 2;								// Frames/Movement for right player
 uint8_t player_speeds[] = {2, 2};							// Player speeds in frames/movement: left and right
 uint8_t player_cpu = 3;												// CPU Level
 uint8_t play_mode_timed = 90;									// Seconds to play for, max should be 4 minutes (240 seconds)
 uint8_t play_mode_score = 99;									// Score to play to
 
-// Random number generation
-unsigned int rand_next = 0xd131;
+// Scores
+uint8_t sc1;
+uint8_t sc2;
 
-// Generate random numbers
-unsigned int rand(void)
+void display_score(uint8_t sc, int on_right)
 {
-	rand_next = TMR3;
-	
-	return rand_next;
+	uint8_t j, k;
+
+	DISPLAY_CHANGE_TO_COMMAND_MODE;
+	spi_send_recv(0x22);
+	spi_send_recv(0);
+  spi_send_recv(0x0);
+  if(on_right)
+  	spi_send_recv(0x10);
+  else
+  	spi_send_recv(0x1f);
+	DISPLAY_CHANGE_TO_DATA_MODE;
+  for(j = 0; j < 2; j++)
+  {
+    if(sc > 99)
+      sc = 0;
+		for(k = 0; k < 8; k++)
+    {
+      if(j == 0)
+        spi_send_recv(font[((0x30+sc/10))*8 + k]);
+      else if(j == 1)
+			   spi_send_recv(font[((0x30+sc%10))*8 + k]);
+    }
+	}
 }
 
 // Clear buffer (array) of all pixels
@@ -160,26 +164,6 @@ void move_player(uint8_t id_player, uint8_t rel_y) {
 		player_coordinates[id_player] = 31 - player_heights[id_player]/2;
 
 }
-
-/*void move_player_left(uint8_t rel_y) {
-	player_left += rel_y;
-	
-	// Inside bounds
-	if (player_left <= player_left_height/2 + 1)
-		player_left = player_left_height/2 + 1;
-	else if (player_left >= 31 - player_left_height/2)
-		player_left = 31 - player_left_height/2;
-}
-
-void move_player_right(uint8_t rel_y) {
-	player_right += rel_y;
-	
-	// Inside bounds
-	if (player_right <= player_right_height/2 + 1)
-		player_right = player_right_height/2 + 1;
-	else if (player_right >= 31 - player_right_height/2)
-		player_right = 31 - player_right_height/2;
-}*/
 
 // Calculate movements OR
 // Move ball according to current movement array
@@ -298,10 +282,10 @@ void cpu_movement() {
 		&& player_cpu_hold >= (player_speeds[ID_PLAYER_LEFT]*(7-player_cpu)-1)
 		|| player_cpu_hold >= (player_speeds[ID_PLAYER_LEFT]*(8-player_cpu)-1)) {
 		if (player_coordinates[ID_PLAYER_CPU] > player_ball[1]) {
-			move_player(ID_PLAYER_CPU ,-1);
+			move_player(ID_PLAYER_CPU, -1);
 			
 		} else if (player_coordinates[ID_PLAYER_CPU] < player_ball[1]) {
-			move_player(ID_PLAYER_CPU ,1);
+			move_player(ID_PLAYER_CPU, 1);
 			
 		}
 		
@@ -331,10 +315,7 @@ void check_player_moves(void) {
 			
 			// 1 Player mode
 			if(in_game == 1) {
-				if (player_cpu == 1) {
-					cpu_movement();
-					
-				}
+				cpu_movement();
 			
 			// 2 Player mode
 			} else if(in_game == 2) {
@@ -355,7 +336,7 @@ void check_player_moves(void) {
 		
 		// Right can only pause in 2p mode
 		if (in_game == 2) {
-			player_input_pause(ID_PLAYER_LEFT, controller_input_b);
+			player_input_pause(ID_PLAYER_RIGHT, controller_input_b);
 		}
 	
 	// Game over
@@ -397,26 +378,6 @@ double ball_bounce_calculation(double angle, uint8_t use_y) {
 	
 	return angle;
 }
-
-/*double ball_bounce_calculation_x(double angle) {
-	double angle_bounce = 0;
-	
-	angle_bounce = (-angle + (2*PI));
-	if (angle_bounce > (2*PI))
-		angle_bounce -= (2*PI);
-	
-	return angle_bounce;
-}
-
-double ball_bounce_calculation_y(double angle) {
-	double angle_bounce = 0;
-	
-	angle_bounce = (-angle + PI + (2*PI));
-	if (angle_bounce > (2*PI))
-		angle_bounce -= (2*PI);
-	
-	return angle_bounce;
-}*/
 
 void ball_collision_detection(void) {
 	
@@ -851,7 +812,7 @@ void playing_field_update(void) {
 	// Paused state
 	if ((play_state >> 6) & 1) {
 		// Pause overlay
-		if (!((play_state >> 1) & 1)) {
+		if (((play_state >> 1) & 1)) {
 			draw_message("QUIT?\nCONFIRM\nWITH 'A'");
 		} else if (((play_state >> 6) & 1) && (play_state & 1) == (ID_PLAYER_LEFT & 1)) {
 			draw_message("<PAUSE<");
@@ -880,103 +841,36 @@ void playing_field_update(void) {
 	play_xy_update();
 }
 
-/*void playing_field_paused(void) {
-	// Clear playing field
-	playbuffer_clear();
-	
-	// Draw field
-	draw_playing_field();
-	
-	// Draw players
-	draw_players();
-	
-	// Draw ball
-	draw_ball();
-	
-	// Pause overlay
-	if (play_quit_init == 1) {
-		draw_message("QUIT?\nCONFIRM\nWITH 'A'");
-	} else if (player_left_pause == 1) {
-		draw_message("<PAUSE<");
-	} else if (player_right_pause == 1) {
-		draw_message(">PAUSE>");
-	}
-	
-	play_xy_update();
-}*/
-
-/*void playing_field_game_over(void) {
-	// Clear playing field
-	playbuffer_clear();
-	
-	// Draw field
-	draw_playing_field();
-	
-	// Draw players
-	draw_players();
-	
-	// Draw ball
-	draw_ball();
-	
-	if (play_game_over == 1) {
-		// Score met
-		if(sc1 > sc2)
-			draw_message("GAME OVER\nLEFT WON!");
-		else if(sc2 > sc1)
-			if(in_game == 1)
-				draw_message("GAME OVER\nCPU WON!");
-			else
-				draw_message("GAME OVER\nRIGHT WON!");
-		else if(sc1 == sc2)
-			draw_message("GAME OVER\nIT'S A\nDRAW");
-		
-	} else if (play_game_over == 2) {
-		draw_message("(A) REPLAY\n(B) EXIT");
-		
-	}
-		
-	play_xy_update();
-}*/
-
 void playing_reset(int exit) {
 	// Reset status
 	ball_speed_temp = ball_speed;
 	play_time_left = play_mode_timed; 
 	play_state = 0;
+	play_timestamp = 0;
 	player_ball_direction = -1;
+	player_ball[0] = 48;
+	player_ball[1] = 16;
+	player_coordinates[0] = 16;
+	player_coordinates[1] = 16;
+	player_commands[0] = 0;
+	player_commands[1] = 0;
+	player_holds[0] = 0;
+	player_holds[1] = 0;
 	
 	// Unload all data
 	sc1 = 0;
 	sc2 = 0;
 
 	// Reset game	
+  //screen_clear();
+  //game_countdown();
+  playbuffer_clear();
   screen_clear();
-  game_countdown();
-  screen_clear();
-	draw_playing_field();
+	display_score(0, 0);
+	display_score(0, 1);
 	
 	// Exit to menu
 	if (exit)
 		in_game = 0;
 	
 }
-
-/*void playing_exit(void) {
-	// Display score and so on..
-	
-	
-	// Reset status
-	ball_speed_temp = ball_speed;
-	play_time_left = play_mode_timed; 
-	play_game_over = 0;
-	player_left_pause = 0;
-	player_right_pause = 0;
-	player_ball_direction = -1;
-	
-	// Unload all data
-	sc1 = -1;
-	sc2 = -1;
-	
-	// Exit to menu
-	in_game = 0;
-}*/
