@@ -777,10 +777,10 @@ void select_option(void)
       // Initiation
     	// - In game
     	in_game = 1; // Activate game
-    	playing_field_init(); // Initiate playing field
+    	//playing_field_init(); // Initiate playing field
     	// -- Scoreboard
-    	display_left_score_update();
-    	display_right_score_update();
+    	display_score(0,0);
+    	display_score(0,1);
 
     	// Get stuck here while in game
       while(in_game)
@@ -806,10 +806,10 @@ void select_option(void)
       // Initiation
     	// - In game
     	in_game = 2; // Activate game
-    	playing_field_init(); // Initiate playing field
+    	//playing_field_init(); // Initiate playing field
     	// -- Scoreboard
-    	display_left_score_update();
-    	display_right_score_update();
+    	display_score(0,0);
+    	display_score(0,1);
 
     	// Get stuck here while in game
       while(in_game)

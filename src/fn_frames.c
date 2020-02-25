@@ -37,19 +37,12 @@ void frame_init(void) {
 void frame_update(void) {
 	
 	// Run every frame (every 0.01 seconds)
-	if (play_game_over == 0 && player_left_pause == 0 && player_right_pause == 0) {
-		playing_field_update();
-			
+	playing_field_update();
+
+	if (play_state == 0) {
 		// Move ball on every frame so speed can be controlled
 		ball_collision_detection();
 		move_ball();
-	
-	} else if (player_left_pause == 1 || player_right_pause == 1) {
-		playing_field_paused();
-		
-	} else if (play_game_over >= 1) {
-		playing_field_game_over();
-		
 	}
 	
 	// Allow one pixel/0.01 seconds
@@ -67,7 +60,7 @@ void frame_update(void) {
 	
 	// Run every 100 frames (every second)
 	} else if (framecount == 99) {
-		if(play_mode_timed != 0 && player_left_pause == 0 && player_right_pause == 0 && play_game_over == 0)
+		if(play_mode_timed != 0 && play_state == 0)
 			timer_countdown();
 		
 	}
