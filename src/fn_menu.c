@@ -7,7 +7,7 @@ uint8_t selected_option;
 uint8_t button_press;
 uint8_t in_menu;
 uint8_t in_options;
-// uint8_t option_row;
+uint8_t option_row;
 // uint8_t option_loop;
 
 
@@ -19,7 +19,7 @@ void menu_layout(char arr[], uint8_t len, uint8_t row, uint8_t sect)
     l = 0;
   if(sect == 2)
     l = l + 64;
-  
+
   DISPLAY_CHANGE_TO_COMMAND_MODE;
   spi_send_recv(0x22);
   spi_send_recv(row);
@@ -154,6 +154,27 @@ void start_menu(void)
   menu_layout(menu_credits, sizeof(menu_credits), 3, 2);
 }
 
+void blink_selected(uint8_t row, uint8_t len)
+{
+  uint8_t i, k, l;
+  l = (64 - len*8) / 2 + 64;
+
+  DISPLAY_CHANGE_TO_COMMAND_MODE;
+  spi_send_recv(0x22);
+  spi_send_recv(row);
+  spi_send_recv(0x0);
+  spi_send_recv(0x21);
+  spi_send_recv(l);
+  spi_send_recv(l + len*8);
+  DISPLAY_CHANGE_TO_DATA_MODE;
+  for(i = 0; i < len; i++)
+  {
+    for(k = 0; k < 8; k++)
+      spi_send_recv(font[(0 + k)]);
+  }
+  quicksleep(1000000);
+}
+
 /*
 void blink_select(uint8_t row, uint8_t len1, uint8_t len2)
 {
@@ -191,7 +212,7 @@ void options_menu(void)
   char opt_ball_size_4x4[] = "4x4";
   char opt_ball_size_6x6[] = "6x6";
   char game_difficulty[] = "DIFF:";
-  char diff_normal[] = "NORMAL";
+  char diff_normal[] = "NORM";
   char diff_hard[] = "HARD";
   char diff_godmode[] = "GODMODE";
   char diff_easy[] = "EASY";
@@ -205,29 +226,82 @@ void options_menu(void)
   menu_layout(opt_ball_speed_fast, sizeof(opt_ball_speed_fast), 2, 2);
   menu_layout(game_difficulty, sizeof(game_difficulty), 3, 1);
   menu_layout(diff_normal, sizeof(diff_normal), 3, 2);
-}
 
-/*
-  in_options = 1;
+  //blink_selected(uint8_t row, uint8_t len)
+
   while(in_options)
   {
-  	if(cur_option == 0)
+  	if(option_row == 0 && cur_option == 0)
     {
-  		options_menu_two(paddle_size, pad_size_medium, 0, sizeof(paddle_size), sizeof(pad_size_medium));
-    	quicksleep(2000000);
-    	blink_select(0, sizeof(paddle_size), sizeof(pad_size_medium));
+      blink_selected(0, sizeof(pad_size_large));
+      menu_layout(pad_size_medium, sizeof(pad_size_medium), 0, 2);
+    	quicksleep(1000000);
   	}
-    else if(cur_option == 1)
+    else if(option_row == 0 && cur_option == 1)
     {
-  		options_menu_two(paddle_size, pad_size_large, 0, sizeof(paddle_size), sizeof(pad_size_large));
-	    quicksleep(2000000);
-	    blink_select(0, sizeof(paddle_size), sizeof(pad_size_large));
+      blink_selected(0, sizeof(pad_size_large));
+  		menu_layout(pad_size_large, sizeof(pad_size_large), 0, 2);
+	    quicksleep(1000000);
     }
-    else if(cur_option == 2)
+    else if(option_row == 0 && cur_option == 2)
     {
-		  options_menu_two(paddle_size, pad_size_small, 0, sizeof(paddle_size), sizeof(pad_size_small));
-		  quicksleep(2000000);
-		  blink_select(0, sizeof(paddle_size), sizeof(pad_size_small));
+      blink_selected(0, sizeof(pad_size_large));
+		  menu_layout(pad_size_small, sizeof(pad_size_small), 0, 2);
+		  quicksleep(1000000);
+    }
+    else if(option_row == 1 && cur_option == 0)
+    {
+      blink_selected(1, sizeof(opt_ball_size_2x2));
+      menu_layout(opt_ball_size_2x2, sizeof(opt_ball_size_2x2), 1, 2);
+      quicksleep(1000000);
+    }
+    else if(option_row == 1 && cur_option == 1)
+    {
+      blink_selected(1, sizeof(opt_ball_size_4x4));
+      menu_layout(opt_ball_size_4x4, sizeof(opt_ball_size_4x4), 1, 2);
+      quicksleep(1000000);
+    }
+    else if(option_row == 1 && cur_option == 2)
+    {
+      blink_selected(1, sizeof(opt_ball_size_6x6));
+      menu_layout(opt_ball_size_6x6, sizeof(opt_ball_size_6x6), 1, 2);
+      quicksleep(1000000);
+    }
+    else if(option_row == 2 && cur_option == 0)
+    {
+      blink_selected(2, sizeof(diff_normal));
+      menu_layout(diff_normal, sizeof(diff_normal), 2, 2);
+      quicksleep(1000000);
+    }
+    else if(option_row == 2 && cur_option == 1)
+    {
+      blink_selected(2, sizeof(opt_ball_speed_fast));
+      menu_layout(opt_ball_speed_fast, sizeof(opt_ball_speed_fast), 2, 2);
+      quicksleep(1000000);
+    }
+    else if(option_row == 2 && cur_option == 2)
+    {
+      blink_selected(2, sizeof(opt_ball_speed_slow));
+      menu_layout(opt_ball_speed_slow, sizeof(opt_ball_speed_slow), 2, 2);
+      quicksleep(1000000);
+    }
+    else if(option_row == 3 && cur_option == 0)
+    {
+      blink_selected(2, sizeof(diff_normal));
+      menu_layout(diff_normal, sizeof(diff_normal), 3, 2);
+      quicksleep(1000000);
+    }
+    else if(option_row == 3 && cur_option == 1)
+    {
+      blink_selected(2, sizeof(diff_hard));
+      menu_layout(diff_hard, sizeof(diff_hard), 3, 2);
+      quicksleep(1000000);
+    }
+    else if(option_row == 3 && cur_option == 2)
+    {
+      blink_selected(2, sizeof(diff_easy));
+      menu_layout(diff_easy, sizeof(diff_easy), 3, 2);
+      quicksleep(1000000);
     }
 
     if (((controller_input_a >> 4) & 1)                                               // if SELECT is pressed
@@ -243,10 +317,43 @@ void options_menu(void)
     		quicksleep(10);
     	}
     }
+
+    if (((controller_input_a >> 1) & 1)			     // if player left DOWN is pressed
+  	|| ((controller_input_b >> 1) & 1))	         // if player right DOWN is pressed
+    {
+      option_row++;
+      /*if(option_row > 3)
+        option_row = 0;*/
+      cur_option = 0;
+    }
+
+    if (((controller_input_a >> 2) & 1)			     // if player left UP is pressed
+  	|| ((controller_input_b >> 2) & 1))	         // if player right UP is pressed
+    {
+      option_row--;
+      /*if(option_row < 0)
+        option_row = 3;*/
+      cur_option = 0;
+    }
+
+
+    if (((controller_input_a >> 5) & 1)			     // if player left B is pressed
+  	|| ((controller_input_b >> 5) & 1))			     // if player right B is pressed
+    {
+      screen_clear();
+      start_menu();
+      in_options = 0;
+      in_menu = 1;
+      while(in_menu)
+      {
+    		check_buttons();
+        select_option();
+      }
+    }
   }
+}
 
-
-
+/*
   option_row = 0;
   in_options = 1;
 
@@ -716,6 +823,7 @@ void select_option(void)
     if(selected_option == 2)                           // if arrow points to options
     {
       screen_clear();
+      in_options = 1;
       options_menu();
       while(1)
         quicksleep(10);
