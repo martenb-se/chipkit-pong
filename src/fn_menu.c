@@ -15,11 +15,11 @@ void menu_layout(char arr[], uint8_t len, uint8_t row, uint8_t sect)
 {
   uint8_t j, k, l, c;
   l = (64 - len*8) / 2;
-  if(sect == 2)
-    l = l + 64;
   if(sect == 0)
     l = 0;
-
+  if(sect == 2)
+    l = l + 64;
+  
   DISPLAY_CHANGE_TO_COMMAND_MODE;
   spi_send_recv(0x22);
   spi_send_recv(row);
@@ -111,8 +111,8 @@ void game_countdown(void)
     spi_send_recv(1);
     spi_send_recv(0x0);
     spi_send_recv(0x21);
-    spi_send_recv(59);
-    spi_send_recv(67);
+    spi_send_recv(60);
+    spi_send_recv(68);
     DISPLAY_CHANGE_TO_DATA_MODE;
     c = game_count_down[j];
     for(k = 0; k < 8; k++)
@@ -126,8 +126,8 @@ void game_countdown(void)
     spi_send_recv(1);
     spi_send_recv(0x0);
     spi_send_recv(0x21);
-    spi_send_recv(51);
-    spi_send_recv(75);
+    spi_send_recv(52);
+    spi_send_recv(76);
     DISPLAY_CHANGE_TO_DATA_MODE;
     for(j = 3; j < 6; j++)
     {
@@ -651,10 +651,8 @@ void menu_select_opt(void)
 
 void select_option(void)
 {
-  if (((controller_input_a >> 3) & 1)			      // if player left START is pressed
-  	|| ((controller_input_a >> 6) & 1)			    // if player left A is pressed
-  	|| ((controller_input_b >> 3) & 1)			    // if player right START is pressed
-  	|| ((controller_input_b >> 6) & 1))			    // if player right A is pressed
+  if (((controller_input_a >> 6) & 1)			             // if player left A is pressed
+    || ((controller_input_b >> 6) & 1))			           // if player right A is pressed
   {
   	if(selected_option == 0)                           // if arrow points to 1-player mode
     {
@@ -723,20 +721,25 @@ void select_option(void)
         quicksleep(10);
       //check_buttons();          // probably not needed
     }
+
+    if(selected_option == 3)
+    {
+      // launch rolling credits here
+    }
   }
 }
 
 
 void check_buttons(void)
 {
-  if (((controller_input_a >> 4) & 1)			 // if player left SELECT is pressed
-  	|| ((controller_input_b >> 4) & 1))			 // if player right SELECT is pressed
+  if (((controller_input_a >> 4) & 1)			          // if player left SELECT is pressed
+  	|| ((controller_input_b >> 4) & 1))			        // if player right SELECT is pressed
   {
     button_press = 1;
     while(button_press == 1)
     {
-      if ((!(controller_input_a >> 4) & 1)					// if player left SELECT is pressed
-  			&& (!(controller_input_b >> 4) & 1))				// if player right SELECT is pressed
+      if ((!(controller_input_a >> 4) & 1)					// if player left SELECT is released
+  			&& (!(controller_input_b >> 4) & 1))				// if player right SELECT is released
       {
         selected_option++;
         if(selected_option > 3)
@@ -747,26 +750,11 @@ void check_buttons(void)
   }
 
   if(selected_option == 0)
-    menu_select(2, 3, 0, 64);   // 1P
+    menu_select(2, 3, 0, 62);   // 1P
   if(selected_option == 1)
-    menu_select(2, 3, 64, 0);   // 2P
+    menu_select(2, 3, 62, 0);   // 2P
   if(selected_option == 2)
-    menu_select(3, 2, 0, 64);   // OPT
+    menu_select(3, 2, 0, 62);   // OPT
   if(selected_option == 3)
-    menu_select(3, 2, 64, 0);   // CRED
+    menu_select(3, 2, 62, 0);   // CRED
 }
-
-
-/*
-8 8 8 8 8 62 28 8
-
-
-00000000
-00000000
-00000100
-00000110
-11111111
-00000110
-00000100
-00000000
-*/
