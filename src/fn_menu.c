@@ -139,6 +139,7 @@ void game_countdown(void)
   }
 }
 
+
 void start_menu(void)
 {
   char menu_gametitle[] = "PONGYANG EXTREME";
@@ -153,6 +154,7 @@ void start_menu(void)
   menu_layout(menu_options, sizeof(menu_options), 3, 1);
   menu_layout(menu_credits, sizeof(menu_credits), 3, 2);
 }
+
 
 void blink_selected(uint8_t row, uint8_t len)
 {
@@ -200,53 +202,51 @@ void blink_select(uint8_t row, uint8_t len1, uint8_t len2)
 
 void options_menu(void)
 {
-  char paddle_size[] = "PAD SZ:";
-  char pad_size_small[] = "SMALL";
-  char pad_size_medium[] = "MED";
-  char pad_size_large[] = "LARGE";
+  char opt_pad_size[] = "PAD SZ:";
+  char opt_pad_size_small[] = "SMALL";
+  char opt_pad_size_medium[] = "MED";
+  char opt_pad_size_large[] = "LARGE";
   char opt_ball_speed[] = "B SPD:";
-  char opt_ball_speed_fast[] = "FAST";
   char opt_ball_speed_slow[] = "SLOW";
+  char opt_ball_speed_fast[] = "FAST";
   char opt_ball_size[] = "B SIZE:";
   char opt_ball_size_2x2[] = "2x2";
   char opt_ball_size_4x4[] = "4x4";
   char opt_ball_size_6x6[] = "6x6";
-  char game_difficulty[] = "DIFF:";
-  char diff_normal[] = "NORM";
-  char diff_hard[] = "HARD";
-  char diff_godmode[] = "GODMODE";
-  char diff_easy[] = "EASY";
+  char opt_game_difficulty[] = "DIFF:";
+  char opt_diff_asy[] = "EASY";
+  char opt_diff_normal[] = "NORM";
+  char opt_diff_hard[] = "HARD";
+  char opt_diff_godmode[] = "GODMODE";
   uint8_t cur_option;
 
-  menu_layout(paddle_size, sizeof(paddle_size), 0, 1);
-  menu_layout(pad_size_medium, sizeof(pad_size_medium), 0, 2);
+  menu_layout(opt_pad_size, sizeof(opt_pad_size), 0, 1);
+  menu_layout(opt_pad_size_medium, sizeof(opt_pad_size_medium), 0, 2);
   menu_layout(opt_ball_size, sizeof(opt_ball_size), 1, 1);
   menu_layout(opt_ball_size_2x2, sizeof(opt_ball_size_2x2), 1, 2);
   menu_layout(opt_ball_speed, sizeof(opt_ball_speed), 2, 1);
   menu_layout(opt_ball_speed_fast, sizeof(opt_ball_speed_fast), 2, 2);
-  menu_layout(game_difficulty, sizeof(game_difficulty), 3, 1);
-  menu_layout(diff_normal, sizeof(diff_normal), 3, 2);
-
-  //blink_selected(uint8_t row, uint8_t len)
+  menu_layout(opt_game_difficulty, sizeof(opt_game_difficulty), 3, 1);
+  menu_layout(opt_diff_normal, sizeof(opt_diff_normal), 3, 2);
 
   while(in_options)
   {
   	if(option_row == 0 && cur_option == 0)
     {
-      blink_selected(0, sizeof(pad_size_large));
-      menu_layout(pad_size_medium, sizeof(pad_size_medium), 0, 2);
+      blink_selected(0, sizeof(opt_pad_size_large));
+      menu_layout(opt_pad_size_medium, sizeof(opt_pad_size_medium), 0, 2);
     	quicksleep(1000000);
   	}
     else if(option_row == 0 && cur_option == 1)
     {
-      blink_selected(0, sizeof(pad_size_large));
-  		menu_layout(pad_size_large, sizeof(pad_size_large), 0, 2);
+      blink_selected(0, sizeof(opt_pad_size_large));
+  		menu_layout(opt_pad_size_large, sizeof(opt_pad_size_large), 0, 2);
 	    quicksleep(1000000);
     }
     else if(option_row == 0 && cur_option == 2)
     {
-      blink_selected(0, sizeof(pad_size_large));
-		  menu_layout(pad_size_small, sizeof(pad_size_small), 0, 2);
+      blink_selected(0, sizeof(opt_pad_size_large));
+		  menu_layout(opt_pad_size_small, sizeof(opt_pad_size_small), 0, 2);
 		  quicksleep(1000000);
     }
     else if(option_row == 1 && cur_option == 0)
@@ -269,8 +269,8 @@ void options_menu(void)
     }
     else if(option_row == 2 && cur_option == 0)
     {
-      blink_selected(2, sizeof(diff_normal));
-      menu_layout(diff_normal, sizeof(diff_normal), 2, 2);
+      blink_selected(2, sizeof(opt_diff_normal));
+      menu_layout(opt_diff_normal, sizeof(opt_diff_normal), 2, 2);
       quicksleep(1000000);
     }
     else if(option_row == 2 && cur_option == 1)
@@ -287,20 +287,20 @@ void options_menu(void)
     }
     else if(option_row == 3 && cur_option == 0)
     {
-      blink_selected(2, sizeof(diff_normal));
-      menu_layout(diff_normal, sizeof(diff_normal), 3, 2);
+      blink_selected(2, sizeof(opt_diff_normal));
+      menu_layout(opt_diff_normal, sizeof(opt_diff_normal), 3, 2);
       quicksleep(1000000);
     }
     else if(option_row == 3 && cur_option == 1)
     {
-      blink_selected(2, sizeof(diff_hard));
-      menu_layout(diff_hard, sizeof(diff_hard), 3, 2);
+      blink_selected(2, sizeof(opt_diff_hard));
+      menu_layout(opt_diff_hard, sizeof(opt_diff_hard), 3, 2);
       quicksleep(1000000);
     }
     else if(option_row == 3 && cur_option == 2)
     {
-      blink_selected(2, sizeof(diff_easy));
-      menu_layout(diff_easy, sizeof(diff_easy), 3, 2);
+      blink_selected(2, sizeof(opt_diff_asy));
+      menu_layout(opt_diff_asy, sizeof(opt_diff_asy), 3, 2);
       quicksleep(1000000);
     }
 
@@ -310,12 +310,11 @@ void options_menu(void)
     	cur_option++;
     	if(cur_option > 2)
     		cur_option = 0;
-
-    	while(((controller_input_a >> 4) & 1) || ((controller_input_b >> 4) & 1))
+      /*while(((controller_input_a >> 4) & 1) || ((controller_input_b >> 4) & 1))
       {
     		// Wait here until key is released
     		quicksleep(10);
-    	}
+    	}*/
     }
 
     if (((controller_input_a >> 1) & 1)			     // if player left DOWN is pressed
@@ -325,6 +324,11 @@ void options_menu(void)
       /*if(option_row > 3)
         option_row = 0;*/
       cur_option = 0;
+      /*while(((controller_input_a >> 1) & 1) || ((controller_input_b >> 1) & 1))
+      {
+    		// Wait here until key is released
+    		quicksleep(10);
+    	}*/
     }
 
     if (((controller_input_a >> 2) & 1)			     // if player left UP is pressed
@@ -334,8 +338,12 @@ void options_menu(void)
       /*if(option_row < 0)
         option_row = 3;*/
       cur_option = 0;
+      /*while(((controller_input_a >> 2) & 1) || ((controller_input_b >> 2) & 1))
+      {
+    		// Wait here until key is released
+    		quicksleep(10);
+    	}*/
     }
-
 
     if (((controller_input_a >> 5) & 1)			     // if player left B is pressed
   	|| ((controller_input_b >> 5) & 1))			     // if player right B is pressed
@@ -362,25 +370,25 @@ void options_menu(void)
     option_loop = 0;
     while(option_loop == 0)                                                             // while pad size is selected
     {
-      options_menu_two(paddle_size, pad_size_medium, 0, sizeof(paddle_size), sizeof(pad_size_medium));
+      options_menu_two(opt_pad_size, opt_pad_size_medium, 0, sizeof(opt_pad_size), sizeof(opt_pad_size_medium));
       quicksleep(2000000);
-      blink_select(0, sizeof(paddle_size), sizeof(pad_size_medium));                    // first option blinking (pad_size_medium)
+      blink_select(0, sizeof(opt_pad_size), sizeof(opt_pad_size_medium));                    // first option blinking (opt_pad_size_medium)
       if (((controller_input_a >> 4) & 1)                                               // if SELECT is pressed
       || ((controller_input_b >> 4) & 1))			                                          // if SELECT is pressed
       {
         while(option_loop == 0)
         {
-          options_menu_two(paddle_size, pad_size_large, 0, sizeof(paddle_size), sizeof(pad_size_large));
+          options_menu_two(opt_pad_size, opt_pad_size_large, 0, sizeof(opt_pad_size), sizeof(opt_pad_size_large));
           quicksleep(2000000);
-          blink_select(0, sizeof(paddle_size), sizeof(pad_size_large));
+          blink_select(0, sizeof(opt_pad_size), sizeof(opt_pad_size_large));
           if (((controller_input_a >> 4) & 1)
           || ((controller_input_b >> 4) & 1))
           {
             while(option_loop == 0)
             {
-              options_menu_two(paddle_size, pad_size_small, 0, sizeof(paddle_size), sizeof(pad_size_small));
+              options_menu_two(opt_pad_size, opt_pad_size_small, 0, sizeof(opt_pad_size), sizeof(opt_pad_size_small));
               quicksleep(2000000);
-              blink_select(0, sizeof(paddle_size), sizeof(pad_size_small));
+              blink_select(0, sizeof(opt_pad_size), sizeof(opt_pad_size_small));
               if (((controller_input_a >> 4) & 1)
               || ((controller_input_b >> 4) & 1))
               {
@@ -435,9 +443,9 @@ void options_menu(void)
       option_loop = 0;
       while(option_loop == 0)
       {
-        options_menu_two(opt_ball_speed, diff_normal, 1, sizeof(opt_ball_speed), sizeof(diff_normal));
+        options_menu_two(opt_ball_speed, opt_diff_normal, 1, sizeof(opt_ball_speed), sizeof(opt_diff_normal));
         quicksleep(2000000);
-        blink_select(1, sizeof(opt_ball_speed), sizeof(diff_normal));
+        blink_select(1, sizeof(opt_ball_speed), sizeof(opt_diff_normal));
         if (((controller_input_a >> 4) & 1)
         || ((controller_input_b >> 4) & 1))
         {
@@ -471,33 +479,33 @@ void options_menu(void)
       option_loop = 0;
       while(option_loop == 0)
       {
-        options_menu_two(game_difficulty, diff_normal, 1, sizeof(game_difficulty), sizeof(diff_normal));
+        options_menu_two(opt_game_difficulty, opt_diff_normal, 1, sizeof(opt_game_difficulty), sizeof(opt_diff_normal));
         quicksleep(2000000);
-        blink_select(1, sizeof(game_difficulty), sizeof(diff_normal));
+        blink_select(1, sizeof(opt_game_difficulty), sizeof(opt_diff_normal));
         if (((controller_input_a >> 4) & 1)
         || ((controller_input_b >> 4) & 1))
         {
           while(option_loop == 0)
           {
-            options_menu_two(game_difficulty, diff_hard, 1, sizeof(game_difficulty), sizeof(diff_hard));
+            options_menu_two(opt_game_difficulty, opt_diff_hard, 1, sizeof(opt_game_difficulty), sizeof(opt_diff_hard));
             quicksleep(2000000);
-            blink_select(1, sizeof(game_difficulty), sizeof(diff_hard));
+            blink_select(1, sizeof(opt_game_difficulty), sizeof(opt_diff_hard));
             if (((controller_input_a >> 4) & 1)
             || ((controller_input_b >> 4) & 1))
             {
               while(option_loop == 0)
               {
-                options_menu_two(game_difficulty, diff_godmode, 1, sizeof(game_difficulty), sizeof(diff_godmode));
+                options_menu_two(opt_game_difficulty, opt_diff_godmode, 1, sizeof(opt_game_difficulty), sizeof(opt_diff_godmode));
                 quicksleep(2000000);
-                blink_select(1, sizeof(game_difficulty), sizeof(diff_godmode));
+                blink_select(1, sizeof(opt_game_difficulty), sizeof(opt_diff_godmode));
                 if (((controller_input_a >> 4) & 1)
                 || ((controller_input_b >> 4) & 1))
                 {
                   while(option_loop == 0)
                   {
-                    options_menu_two(game_difficulty, diff_easy, 1, sizeof(game_difficulty), sizeof(diff_easy));
+                    options_menu_two(opt_game_difficulty, opt_diff_asy, 1, sizeof(opt_game_difficulty), sizeof(opt_diff_asy));
                     quicksleep(2000000);
-                    blink_select(1, sizeof(game_difficulty), sizeof(diff_easy));
+                    blink_select(1, sizeof(opt_game_difficulty), sizeof(opt_diff_asy));
                     if (((controller_input_a >> 4) & 1)
                     || ((controller_input_b >> 4) & 1))
                     {
