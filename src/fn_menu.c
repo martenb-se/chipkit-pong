@@ -11,9 +11,9 @@ uint8_t in_options;
 // uint8_t option_loop;
 
 
-void options_menu_one(char arr[], int row, int len)
+void options_menu_one(char arr[], uint8_t row, uint8_t len)
 {
-  int i, j, k, l, c;
+  uint8_t j, k, l, c;
   l = (128 - len*8) / 2;
 
   DISPLAY_CHANGE_TO_COMMAND_MODE;
@@ -32,9 +32,9 @@ void options_menu_one(char arr[], int row, int len)
   }
 }
 
-void options_menu_two(char arr1[], char arr2[], int row, int len1, int len2)
+void options_menu_two(char arr1[], char arr2[], uint8_t row, uint8_t len1, uint8_t len2)
 {
-  int i, j, k, l, c;
+  uint8_t j, k, l, c;
   l = (128 - (len1*8 + len2*8)) / 3;
 
   // print array 1
@@ -73,7 +73,7 @@ void options_menu_two(char arr1[], char arr2[], int row, int len1, int len2)
 void game_countdown(void)
 {
   char game_count_down[] = "321GO!";
-  int j, k, c;
+  uint8_t j, k, c;
 
   for(j = 0; j < 3; j++)
   {
@@ -123,9 +123,9 @@ void start_menu(void)
 }
 
 
-void blink_select(int row, int len1, int len2)
+void blink_select(uint8_t row, uint8_t len1, uint8_t len2)
 {
-  int i, k, l;
+  uint8_t i, k, l;
   l = (128 - (len1*8 + len2*8)) / 3;
 
   DISPLAY_CHANGE_TO_COMMAND_MODE;
@@ -386,11 +386,29 @@ void options_menu(void)
 }
 */
 
+void menu_arrow_select(void)
+{
+  uint8_t i, j, k;
 
+  // points arrow to 1P
+  DISPLAY_CHANGE_TO_COMMAND_MODE;
+  spi_send_recv(0x22);
+  spi_send_recv(2);
+  spi_send_recv(0x0);
+  spi_send_recv(0x21);
+  spi_send_recv(16);
+  spi_send_recv(24);
+  DISPLAY_CHANGE_TO_DATA_MODE;
+  for(k = 0; k < 8; k++)
+    spi_send_recv(font[(1*8 + k)]);
+
+
+
+}
 
 void menu_select_1p(void)
 {
-  int k;
+  uint8_t k;
 
   // points arrow to 1P
   DISPLAY_CHANGE_TO_COMMAND_MODE;
@@ -431,7 +449,7 @@ void menu_select_1p(void)
 
 void menu_select_2p(void)
 {
-  int k;
+  uint8_t k;
 
   // points arrow to 2P
   DISPLAY_CHANGE_TO_COMMAND_MODE;
@@ -472,7 +490,7 @@ void menu_select_2p(void)
 
 void menu_select_opt(void)
 {
-  int k;
+  uint8_t k;
 
   // points arrow to OPT
   DISPLAY_CHANGE_TO_COMMAND_MODE;
@@ -614,161 +632,6 @@ void check_buttons(void)
   if(selected_option == 2)
     menu_select_opt();
 }
-
-
-/*
-void start_menu(void)
-{
-  int j, k, c;
-
-  // menu_gametitle label
-  DISPLAY_CHANGE_TO_COMMAND_MODE;
-  spi_send_recv(0x22);
-  spi_send_recv(0);
-  spi_send_recv(0x0);
-  spi_send_recv(0x10);
-  DISPLAY_CHANGE_TO_DATA_MODE;
-  for(j = 0; j < sizeof(menu_gametitle); j++)
-  {
-		c = menu_gametitle[j];
-		for(k = 0; k < 8; k++)
-      spi_send_recv(font[(c*8 + k)]);
-	}
-
-  // menu_oneplayer label
-  DISPLAY_CHANGE_TO_COMMAND_MODE;
-  spi_send_recv(0x22);
-  spi_send_recv(2);
-  spi_send_recv(0x0);
-  spi_send_recv(0x21);
-  spi_send_recv(32);
-  spi_send_recv(48);
-  DISPLAY_CHANGE_TO_DATA_MODE;
-  for(j = 0; j < sizeof(menu_oneplayer); j++)
-  {
-		c = menu_oneplayer[j];
-		for(k = 0; k < 8; k++)
-      spi_send_recv(font[(c*8 + k)]);
-	}
-
-  // menu_twoplayer label
-  DISPLAY_CHANGE_TO_COMMAND_MODE;
-  spi_send_recv(0x22);
-  spi_send_recv(2);
-  spi_send_recv(0x0);
-  spi_send_recv(0x21);
-  spi_send_recv(80);
-  spi_send_recv(96);
-  DISPLAY_CHANGE_TO_DATA_MODE;
-  for(j = 0; j < sizeof(menu_twoplayer); j++)
-  {
-		c = menu_twoplayer[j];
-		for(k = 0; k < 8; k++)
-      spi_send_recv(font[(c*8 + k)]);
-	}
-
-  // options label
-  DISPLAY_CHANGE_TO_COMMAND_MODE;
-  spi_send_recv(0x22);
-  spi_send_recv(3);
-  spi_send_recv(0x0);
-  spi_send_recv(0x21);
-  spi_send_recv(52);
-  spi_send_recv(76);
-  DISPLAY_CHANGE_TO_DATA_MODE;
-  for(j = 0; j < sizeof(options); j++)
-  {
-		c = options[j];
-		for(k = 0; k < 8; k++)
-      spi_send_recv(font[(c*8 + k)]);
-	}
-}
-*/
-
-
-/*
-void check_buttons(void)
-{
-  if ((input_get_buttons() >> 3) & 1)        // if button 4 is pressed
-  {
-    button = 1;
-    while(button == 1)
-    {
-      if ((!(input_get_buttons() >> 3) & 1))   // if button 4 is released
-      {
-        option++;
-        if(option > 2)
-          option = 0;
-        button = 0;
-      }
-    }
-  }
-
-  if(option == 0)
-    menu_select_1p();
-  if(option == 1)
-    menu_select_2p();
-  if(option == 2)
-    menu_select_opt();
-}
-
-void select_option(void)
-{
-  if ((input_get_buttons() >> 2) & 1)          // if button 3 is pressed
-  {
-    if(option == 1)
-    {
-      screen_clear();
-      frame_init(); // Enable timer for frames
-    	playing_field_init(); // Initiate playing field
-    	// -- Scoreboard
-    	display_left_score_update();
-    	display_right_score_update();
-
-    	// Enable interrupts
-    	enable_interrupt();
-
-    	while(1)
-    	{
-    		// Do nothing
-    		quicksleep(10);
-    	}
-    }
-
-  }
-}
-
-
-
-  /*
-  if ((input_get_buttons() >> 2) & 1)          // if button 3 is pressed
-  {
-    button = 1;
-    while(button == 1)
-    {
-      if ((!(input_get_buttons() >> 2) & 1))   // if button 3 is released
-      {
-        if(options == 1)
-        {
-          // Initiation
-          // - In game
-          frame_init(); // Enable timer for frames
-          playing_field_init(); // Initiate playing field
-          // -- Scoreboard
-          display_left_score_update();
-          display_right_score_update();
-
-          // Enable interrupts
-          enable_interrupt();
-        }
-        button = 0;
-      }
-    }
-
-  }
-*/
-
-
 
 
 /*

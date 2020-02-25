@@ -4,20 +4,18 @@
 
 char leftscorebuffer[] = "00";
 char rightscorebuffer[] = "00";
-int sc1 = -1;
-int sc2 = -1;
+uint8_t sc1;
+uint8_t sc2;
 
 void display_left_score_update(void)
 {
-	int j, k, c;
-  sc1++;
+	uint8_t j, k, c;
 
 	DISPLAY_CHANGE_TO_COMMAND_MODE;
 	spi_send_recv(0x22);
 	spi_send_recv(0);
   spi_send_recv(0x0);
   spi_send_recv(0x10);
-
 	DISPLAY_CHANGE_TO_DATA_MODE;
   for(j = 0; j < 2; j++)
   {
@@ -38,15 +36,13 @@ void display_left_score_update(void)
 
 void display_right_score_update(void)
 {
-	int j, k, c;
-  sc2++;
+	uint8_t j, k, c;
 
 	DISPLAY_CHANGE_TO_COMMAND_MODE;
 	spi_send_recv(0x22);
 	spi_send_recv(0);
   spi_send_recv(0x0);
   spi_send_recv(0x1f);
-
 	DISPLAY_CHANGE_TO_DATA_MODE;
   for(j = 0; j < 2; j++)
   {

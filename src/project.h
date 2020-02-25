@@ -73,8 +73,8 @@ extern char diff_godmode[7];
 extern char diff_easy[4];
 */
 void start_menu(void);
-void options_menu_one(char arr[], int row, int len);
-void options_menu_two(char arr1[], char arr2[], int row, int len1, int len2);
+void options_menu_one(char arr[], uint8_t row, uint8_t len);
+void options_menu_two(char arr1[], char arr2[], uint8_t row, uint8_t len1, uint8_t len2);
 void game_countdown(void);
 void start_menu(void);
 void options_menu();
@@ -88,8 +88,8 @@ void check_buttons(void);
 // Scores
 extern char leftscorebuffer[2];
 extern char rightscorebuffer[2];
-extern int sc1;
-extern int sc2;
+extern uint8_t sc1;
+extern uint8_t sc2;
 void display_left_score_update(void);
 void display_right_score_update(void);
 
