@@ -76,7 +76,7 @@ extern uint8_t player_coordinates[2];
 extern double player_ball_movement_pointer;
 extern uint8_t player_ball_movemestatic[2][96];
 extern double player_ball_direction; 
-extern uint8_t ball_speed_temp;
+extern double ball_speed_temp;
 
 extern uint8_t ball_size;
 extern uint8_t ball_speed;

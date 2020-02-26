@@ -55,7 +55,7 @@ uint8_t player_coordinates[] = {16, 16};			// Player coordinates: left and right
 double player_ball_movement_pointer = 0;			// Array Pointer for movement
 uint8_t player_ball_movements[2][96];				  // Movement coordinates: X and Y
 double player_ball_direction = -1;						// Current direction of ball
-uint8_t ball_speed_temp = 2;									// Temporary Frames/Movement for ball
+double ball_speed_temp = 2;									// Temporary Frames/Movement for ball
 
 // Customizable options
 uint8_t ball_size = 2;												// Ball size squared
@@ -203,7 +203,7 @@ void move_ball() {
 	player_ball[1] = player_ball_movements[1][(int)player_ball_movement_pointer];
 	
 	if(ball_speed_temp != ball_speed)
-		player_ball_movement_pointer += 1/(double)ball_speed_temp;
+		player_ball_movement_pointer += 1/ball_speed_temp;
 	else
 		player_ball_movement_pointer += 1/(double)ball_speed;
 	
@@ -443,7 +443,7 @@ void ball_collision_detection(void) {
 			// Moving up - Increase speed
 			} else if (player_ball_direction > 0 && player_ball_direction < PI) {
 				player_ball_direction = PI/3;
-				ball_speed_temp = ball_speed/2;
+				ball_speed_temp = (double)ball_speed/2;
 			
 			// Make angle	
 			} else {
@@ -471,7 +471,7 @@ void ball_collision_detection(void) {
 			// Moving down - Increase speed and angle
 			} else if(player_ball_direction > PI && player_ball_direction < 2*PI) {
 				player_ball_direction = 5*(PI/3);
-				ball_speed_temp = ball_speed/2;
+				ball_speed_temp = (double)ball_speed/2;
 				
 			// Make angle	
 			} else {
@@ -484,7 +484,7 @@ void ball_collision_detection(void) {
 			// Increase speed
 			if(player_ball_direction > PI - PI/12
 				&& player_ball_direction < PI + PI/12) {
-				ball_speed_temp = ball_speed/2;
+				ball_speed_temp = (double)ball_speed/2;
 			}
 			
 			player_ball_direction = 0;
@@ -555,7 +555,7 @@ void ball_collision_detection(void) {
 			// Moving up - Increase speed
 			} else if (player_ball_direction > 0 && player_ball_direction < PI) {
 				player_ball_direction = 2*(PI/3);
-				ball_speed_temp = ball_speed/2;
+				ball_speed_temp = (double)ball_speed/2;
 			
 			// Make angle	
 			} else {
@@ -580,7 +580,7 @@ void ball_collision_detection(void) {
 			// Moving down - Increase speed
 			} else if(player_ball_direction > PI && player_ball_direction < 2*PI) {
 				player_ball_direction = 4*(PI/3);
-				ball_speed_temp = ball_speed/2;
+				ball_speed_temp = (double)ball_speed/2;
 				
 			// Make angle	
 			} else {
@@ -593,7 +593,7 @@ void ball_collision_detection(void) {
 			// Increase speed
 			if(player_ball_direction < PI/12
 				|| player_ball_direction > 3*(PI/2) + (5*PI)/12) {
-				ball_speed_temp = ball_speed/2;
+				ball_speed_temp = (double)ball_speed/2;
 			}
 			
 			player_ball_direction = PI;
