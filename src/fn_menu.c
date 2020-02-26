@@ -6,9 +6,29 @@
 uint8_t selected_option;
 uint8_t button_press;
 uint8_t in_menu;
-uint8_t in_options;
-uint8_t option_row;
-// uint8_t option_loop;
+uint8_t in_options = 0;
+uint8_t option_row = 1;
+uint8_t cur_option_pad;
+uint8_t cur_option_ballsz;
+uint8_t cur_option_ballspd;
+uint8_t cur_option_diff;
+uint8_t blink_off_or_on;
+char opt_pad_size[] = "PAD SZ:";
+char opt_pad_size_small[] = "SMALL";
+char opt_pad_size_medium[] = "MED";
+char opt_pad_size_large[] = "LARGE";
+char opt_ball_speed[] = "B SP:";
+char opt_ball_speed_slow[] = "SLOW";
+char opt_ball_speed_fast[] = "FAST";
+char opt_ball_size[] = "B SZ:";
+char opt_ball_size_2x2[] = "2x2";
+char opt_ball_size_4x4[] = "4x4";
+char opt_ball_size_6x6[] = "6x6";
+char opt_game_difficulty[] = "DIF:";
+char opt_diff_easy[] = "EASY";
+char opt_diff_normal[] = "NORM";
+char opt_diff_hard[] = "HARD";
+// char opt_diff_godmode[] = "GODMODE";
 
 
 void menu_layout(char arr[], uint8_t len, uint8_t row, uint8_t sect)
@@ -174,7 +194,108 @@ void blink_selected(uint8_t row, uint8_t len)
     for(k = 0; k < 8; k++)
       spi_send_recv(font[(0 + k)]);
   }
-  quicksleep(1000000);
+}
+
+/*
+void blink_off_on(uint8_t blink_status, uint8_t len1, uint8_t len2, uint8_t row)
+{
+  if(blink_off_or_on == blink_status)
+    blink_selected(0, sizeof(opt_pad_size_large));
+  if(blink_off_or_on == blink_status)
+    menu_layout(opt_pad_size_medium, sizeof(opt_pad_size_medium), 0, 2);
+}
+*/
+
+void blink_function(void)
+{
+  if(option_row == 1 && cur_option_pad == 0)
+  {
+    if(blink_off_or_on == 0)
+      blink_selected(0, sizeof(opt_pad_size_large));
+    if(blink_off_or_on == 1)
+      menu_layout(opt_pad_size_medium, sizeof(opt_pad_size_medium), 0, 2);
+  }
+  else if(option_row == 1 && cur_option_pad == 1)
+  {
+    if(blink_off_or_on == 0)
+      blink_selected(0, sizeof(opt_pad_size_large));
+    if(blink_off_or_on == 1)
+      menu_layout(opt_pad_size_large, sizeof(opt_pad_size_large), 0, 2);
+  }
+  else if(option_row == 1 && cur_option_pad == 2)
+  {
+    if(blink_off_or_on == 0)
+      blink_selected(0, sizeof(opt_pad_size_small));
+    if(blink_off_or_on == 1)
+      menu_layout(opt_pad_size_small, sizeof(opt_pad_size_small), 0, 2);
+  }
+  else if(option_row == 2 && cur_option_ballsz == 0)
+  {
+    if(blink_off_or_on == 0)
+      blink_selected(1, sizeof(opt_ball_size_2x2));
+    if(blink_off_or_on == 1)
+      menu_layout(opt_ball_size_2x2, sizeof(opt_ball_size_2x2), 1, 2);
+  }
+  else if(option_row == 2 && cur_option_ballsz == 1)
+  {
+    if(blink_off_or_on == 0)
+      blink_selected(1, sizeof(opt_ball_size_4x4));
+    if(blink_off_or_on == 1)
+      menu_layout(opt_ball_size_4x4, sizeof(opt_ball_size_4x4), 1, 2);
+  }
+  else if(option_row == 2 && cur_option_ballsz == 2)
+  {
+    if(blink_off_or_on == 0)
+      blink_selected(1, sizeof(opt_ball_size_6x6));
+    if(blink_off_or_on == 1)
+      menu_layout(opt_ball_size_6x6, sizeof(opt_ball_size_6x6), 1, 2);
+  }
+  else if(option_row == 3 && cur_option_ballspd == 0)
+  {
+    if(blink_off_or_on == 0)
+      blink_selected(2, sizeof(opt_diff_normal));
+    if(blink_off_or_on == 1)
+      menu_layout(opt_diff_normal, sizeof(opt_diff_normal), 2, 2);
+  }
+  else if(option_row == 3 && cur_option_ballspd == 1)
+  {
+    if(blink_off_or_on == 0)
+      blink_selected(2, sizeof(opt_ball_speed_fast));
+    if(blink_off_or_on == 1)
+      menu_layout(opt_ball_speed_fast, sizeof(opt_ball_speed_fast), 2, 2);
+  }
+  else if(option_row == 3 && cur_option_ballspd == 2)
+  {
+    if(blink_off_or_on == 0)
+      blink_selected(2, sizeof(opt_ball_speed_slow));
+    if(blink_off_or_on == 1)
+      menu_layout(opt_ball_speed_slow, sizeof(opt_ball_speed_slow), 2, 2);
+  }
+  else if(option_row == 4 && cur_option_diff == 0)
+  {
+    if(blink_off_or_on == 0)
+      blink_selected(3, sizeof(opt_diff_normal));
+    if(blink_off_or_on == 1)
+      menu_layout(opt_diff_normal, sizeof(opt_diff_normal), 3, 2);
+  }
+  else if(option_row == 4 && cur_option_diff == 1)
+  {
+    if(blink_off_or_on == 0)
+      blink_selected(3, sizeof(opt_diff_hard));
+    if(blink_off_or_on == 1)
+      menu_layout(opt_diff_hard, sizeof(opt_diff_hard), 3, 2);
+  }
+  else if(option_row == 4 && cur_option_diff == 2)
+  {
+    if(blink_off_or_on == 0)
+      blink_selected(3, sizeof(opt_diff_easy));
+    if(blink_off_or_on == 1)
+      menu_layout(opt_diff_easy, sizeof(opt_diff_easy), 3, 2);
+  }
+  blink_off_or_on++;
+  if(blink_off_or_on > 1)
+    blink_off_or_on = 0;
+  menu_layout(opt_pad_size, sizeof(opt_pad_size), 0, 1);
 }
 
 /*
@@ -202,151 +323,127 @@ void blink_select(uint8_t row, uint8_t len1, uint8_t len2)
 
 void options_menu(void)
 {
-  char opt_pad_size[] = "PAD SZ:";
-  char opt_pad_size_small[] = "SMALL";
-  char opt_pad_size_medium[] = "MED";
-  char opt_pad_size_large[] = "LARGE";
-  char opt_ball_speed[] = "B SPD:";
-  char opt_ball_speed_slow[] = "SLOW";
-  char opt_ball_speed_fast[] = "FAST";
-  char opt_ball_size[] = "B SIZE:";
-  char opt_ball_size_2x2[] = "2x2";
-  char opt_ball_size_4x4[] = "4x4";
-  char opt_ball_size_6x6[] = "6x6";
-  char opt_game_difficulty[] = "DIFF:";
-  char opt_diff_asy[] = "EASY";
-  char opt_diff_normal[] = "NORM";
-  char opt_diff_hard[] = "HARD";
-  char opt_diff_godmode[] = "GODMODE";
-  uint8_t cur_option;
-
   menu_layout(opt_pad_size, sizeof(opt_pad_size), 0, 1);
   menu_layout(opt_pad_size_medium, sizeof(opt_pad_size_medium), 0, 2);
   menu_layout(opt_ball_size, sizeof(opt_ball_size), 1, 1);
   menu_layout(opt_ball_size_2x2, sizeof(opt_ball_size_2x2), 1, 2);
   menu_layout(opt_ball_speed, sizeof(opt_ball_speed), 2, 1);
-  menu_layout(opt_ball_speed_fast, sizeof(opt_ball_speed_fast), 2, 2);
+  menu_layout(opt_diff_normal, sizeof(opt_diff_normal), 2, 2);
   menu_layout(opt_game_difficulty, sizeof(opt_game_difficulty), 3, 1);
   menu_layout(opt_diff_normal, sizeof(opt_diff_normal), 3, 2);
 
   while(in_options)
   {
-  	if(option_row == 0 && cur_option == 0)
+  	if(option_row == 1 && cur_option_pad == 0)
     {
-      blink_selected(0, sizeof(opt_pad_size_large));
-      menu_layout(opt_pad_size_medium, sizeof(opt_pad_size_medium), 0, 2);
-    	quicksleep(1000000);
+      player_heights[0] = 10;
+      player_heights[1] = 10;
   	}
-    else if(option_row == 0 && cur_option == 1)
+    else if(option_row == 1 && cur_option_pad == 1)
     {
-      blink_selected(0, sizeof(opt_pad_size_large));
-  		menu_layout(opt_pad_size_large, sizeof(opt_pad_size_large), 0, 2);
-	    quicksleep(1000000);
+      player_heights[0] = 12;
+      player_heights[1] = 12;
     }
-    else if(option_row == 0 && cur_option == 2)
+    else if(option_row == 1 && cur_option_pad == 2)
     {
-      blink_selected(0, sizeof(opt_pad_size_large));
-		  menu_layout(opt_pad_size_small, sizeof(opt_pad_size_small), 0, 2);
-		  quicksleep(1000000);
+      player_heights[0] = 8;
+      player_heights[1] = 8;
     }
-    else if(option_row == 1 && cur_option == 0)
+    else if(option_row == 2 && cur_option_ballsz == 0)
     {
-      blink_selected(1, sizeof(opt_ball_size_2x2));
-      menu_layout(opt_ball_size_2x2, sizeof(opt_ball_size_2x2), 1, 2);
-      quicksleep(1000000);
+      ball_size = 2;
     }
-    else if(option_row == 1 && cur_option == 1)
+    else if(option_row == 2 && cur_option_ballsz == 1)
     {
-      blink_selected(1, sizeof(opt_ball_size_4x4));
-      menu_layout(opt_ball_size_4x4, sizeof(opt_ball_size_4x4), 1, 2);
-      quicksleep(1000000);
+      ball_size = 4;
     }
-    else if(option_row == 1 && cur_option == 2)
+    else if(option_row == 2 && cur_option_ballsz == 2)
     {
-      blink_selected(1, sizeof(opt_ball_size_6x6));
-      menu_layout(opt_ball_size_6x6, sizeof(opt_ball_size_6x6), 1, 2);
-      quicksleep(1000000);
+      ball_size = 6;
     }
-    else if(option_row == 2 && cur_option == 0)
+    else if(option_row == 3 && cur_option_ballspd == 0)
     {
-      blink_selected(2, sizeof(opt_diff_normal));
-      menu_layout(opt_diff_normal, sizeof(opt_diff_normal), 2, 2);
-      quicksleep(1000000);
+      ball_speed = 2;
     }
-    else if(option_row == 2 && cur_option == 1)
+    else if(option_row == 3 && cur_option_ballspd == 1)
     {
-      blink_selected(2, sizeof(opt_ball_speed_fast));
-      menu_layout(opt_ball_speed_fast, sizeof(opt_ball_speed_fast), 2, 2);
-      quicksleep(1000000);
+      ball_speed = 1;
     }
-    else if(option_row == 2 && cur_option == 2)
+    else if(option_row == 3 && cur_option_ballspd == 2)
     {
-      blink_selected(2, sizeof(opt_ball_speed_slow));
-      menu_layout(opt_ball_speed_slow, sizeof(opt_ball_speed_slow), 2, 2);
-      quicksleep(1000000);
+      ball_speed = 4;
     }
-    else if(option_row == 3 && cur_option == 0)
+    else if(option_row == 4 && cur_option_diff == 0)
     {
-      blink_selected(2, sizeof(opt_diff_normal));
-      menu_layout(opt_diff_normal, sizeof(opt_diff_normal), 3, 2);
-      quicksleep(1000000);
+      player_cpu = 2;
     }
-    else if(option_row == 3 && cur_option == 1)
+    else if(option_row == 4 && cur_option_diff == 1)
     {
-      blink_selected(2, sizeof(opt_diff_hard));
-      menu_layout(opt_diff_hard, sizeof(opt_diff_hard), 3, 2);
-      quicksleep(1000000);
+      player_cpu = 3;
     }
-    else if(option_row == 3 && cur_option == 2)
+    else if(option_row == 4 && cur_option_diff == 2)
     {
-      blink_selected(2, sizeof(opt_diff_asy));
-      menu_layout(opt_diff_asy, sizeof(opt_diff_asy), 3, 2);
-      quicksleep(1000000);
+      player_cpu = 1;
     }
 
-    if (((controller_input_a >> 4) & 1)                                               // if SELECT is pressed
-    || ((controller_input_b >> 4) & 1))			                                          // if SELECT is pressed
+    if (((controller_input_a >> 4) & 1)                                           // if SELECT is pressed
+    || ((controller_input_b >> 4) & 1))			                                      // if SELECT is pressed
     {
-    	cur_option++;
-    	if(cur_option > 2)
-    		cur_option = 0;
-      /*while(((controller_input_a >> 4) & 1) || ((controller_input_b >> 4) & 1))
+      if(option_row == 1)
+        cur_option_pad++;
+      if(option_row == 2)
+        cur_option_ballsz++;
+      if(option_row == 3)
+        cur_option_ballspd++;
+      if(option_row == 4)
+        cur_option_diff++;
+    	if(cur_option_pad > 2)
+    		cur_option_pad = 0;
+      if(cur_option_ballsz > 2)
+    		cur_option_ballsz = 0;
+      if(cur_option_ballspd > 2)
+        cur_option_ballspd = 0;
+      if(cur_option_diff > 2)
+        cur_option_diff = 0;
+      while(((controller_input_a >> 4) & 1) || ((controller_input_b >> 4) & 1))
       {
     		// Wait here until key is released
     		quicksleep(10);
-    	}*/
+    	}
     }
 
-    if (((controller_input_a >> 1) & 1)			     // if player left DOWN is pressed
-  	|| ((controller_input_b >> 1) & 1))	         // if player right DOWN is pressed
+    if (((controller_input_a >> 1) & 1)			                                      // if player left DOWN is pressed
+  	|| ((controller_input_b >> 1) & 1))	                                          // if player right DOWN is pressed
     {
+      blink_off_or_on = 1;
+      blink_function();
       option_row++;
-      /*if(option_row > 3)
-        option_row = 0;*/
-      cur_option = 0;
-      /*while(((controller_input_a >> 1) & 1) || ((controller_input_b >> 1) & 1))
+      if(option_row > 4)
+        option_row = 1;
+      while(((controller_input_a >> 1) & 1) || ((controller_input_b >> 1) & 1))
       {
     		// Wait here until key is released
     		quicksleep(10);
-    	}*/
+    	}
     }
 
-    if (((controller_input_a >> 2) & 1)			     // if player left UP is pressed
-  	|| ((controller_input_b >> 2) & 1))	         // if player right UP is pressed
+    if (((controller_input_a >> 2) & 1)			                                      // if player left UP is pressed
+  	|| ((controller_input_b >> 2) & 1))	                                          // if player right UP is pressed
     {
+      blink_off_or_on = 1;
+      blink_function();
       option_row--;
-      /*if(option_row < 0)
-        option_row = 3;*/
-      cur_option = 0;
-      /*while(((controller_input_a >> 2) & 1) || ((controller_input_b >> 2) & 1))
+      if(option_row < 1)
+        option_row = 4;
+      while(((controller_input_a >> 2) & 1) || ((controller_input_b >> 2) & 1))
       {
     		// Wait here until key is released
     		quicksleep(10);
-    	}*/
+    	}
     }
 
-    if (((controller_input_a >> 5) & 1)			     // if player left B is pressed
-  	|| ((controller_input_b >> 5) & 1))			     // if player right B is pressed
+    if (((controller_input_a >> 5) & 1)			                                      // if player left B is pressed
+  	|| ((controller_input_b >> 5) & 1))			                                      // if player right B is pressed
     {
       screen_clear();
       start_menu();
@@ -503,9 +600,9 @@ void options_menu(void)
                 {
                   while(option_loop == 0)
                   {
-                    options_menu_two(opt_game_difficulty, opt_diff_asy, 1, sizeof(opt_game_difficulty), sizeof(opt_diff_asy));
+                    options_menu_two(opt_game_difficulty, opt_diff_easy, 1, sizeof(opt_game_difficulty), sizeof(opt_diff_easy));
                     quicksleep(2000000);
-                    blink_select(1, sizeof(opt_game_difficulty), sizeof(opt_diff_asy));
+                    blink_select(1, sizeof(opt_game_difficulty), sizeof(opt_diff_easy));
                     if (((controller_input_a >> 4) & 1)
                     || ((controller_input_b >> 4) & 1))
                     {
@@ -792,7 +889,7 @@ void select_option(void)
 
       // Clear screen after game is done
       screen_clear();
-      
+
       // Reload start menu
       start_menu();
     }
@@ -802,7 +899,7 @@ void select_option(void)
       screen_clear();
       game_countdown();
       screen_clear();
-      
+
       // Initiation
     	in_game = 2;
     	playing_reset(0);
@@ -822,7 +919,7 @@ void select_option(void)
 
       // Clear screen after game is done
       screen_clear();
-      
+
       // Reload start menu
       start_menu();
     }

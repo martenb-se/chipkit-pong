@@ -62,6 +62,7 @@ void frame_update(void);
 // Menu
 void select_option(void);
 void check_buttons(void);
+extern uint8_t in_options;
 
 // Playing
 extern uint8_t play_time_left;
@@ -75,7 +76,7 @@ extern uint8_t player_ball[2];
 extern uint8_t player_coordinates[2];
 extern double player_ball_movement_pointer;
 extern uint8_t player_ball_movemestatic[2][96];
-extern double player_ball_direction; 
+extern double player_ball_direction;
 extern double ball_speed_temp;
 
 extern uint8_t ball_size;
@@ -84,7 +85,6 @@ extern uint8_t player_heights[2];
 extern uint8_t player_speeds[2];
 extern uint8_t player_cpu;
 extern uint8_t play_mode_timed;
-
 extern uint8_t sc1;
 extern uint8_t sc2;
 

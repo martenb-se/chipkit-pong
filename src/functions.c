@@ -10,6 +10,8 @@ uint8_t controller_input_a = 0;
 uint8_t controller_input_a_buffer = 0;
 uint8_t controller_input_b = 0;
 uint8_t controller_input_b_buffer = 0;
+int blink_counter = 0;
+
 
 // Random number generation
 unsigned int rand_next = 0xd131;
@@ -106,7 +108,7 @@ void quicksleep(int cyc) {
 }
 
 void frame_update(void) {
-	
+
 	// Run every frame (every 0.01 seconds)
 	playing_field_update();
 
@@ -115,65 +117,65 @@ void frame_update(void) {
 		ball_collision_detection();
 		move_ball();
 	}
-	
+
 	// Allow one pixel/0.01 seconds
 	check_player_moves();
-		
+
 	// Run every 2 frames (every 0.02 seconds)
 	if (framecount%2 == 0) {
-	
+
 	// Run every 5 frames (every 0.05 seconds)
 	} else if (framecount%5 == 0) {
 
-	
+
 	// Run every 10 frames (every 0.1 seconds)
 	} else if (framecount%10 == 0) {
-	
+
 	// Run every 100 frames (every second)
 	} else if (framecount == 99) {
 		if(play_mode_timed != 0 && play_state == 0)
 			timer_countdown();
-		
+
 	}
-	
+
 	// Frame counter
 	framecount++;
 	if (framecount > 99) {
 		framecount = 0;
 	}
-	
+
 }
 
 void timer_init(void) {
-	
+
 	// Random number timer
 	TMR3 = 0;
 	T3CONCLR = 0x70; // Clear 6:4 (set prescale 1:1)
 	PR3 = 65293;
 	// Turn on
 	T3CONSET = 0x8000; // Bit 15
-	
+
 	// Controller and frame timer
 	TRISD = TRISD | 0xe0; // 0b0000 0000 1110 0000
   TRISF = TRISF | 1;
   TMR4 = 0;
   T4CONSET = 0x40;
-  
+
   // Use a period of (50000/(8*2)/5) 625 (8*5 rising edges per frame)
   // Get 5 inputs every frame
   // One frame every 0.01s
-  PR4 = 625; 
-  
+  PR4 = 625;
+
   // Clear flag
   IFSCLR(0) = 0x10000;
-  
+
   // Enable interrupts for Timer 4
 	IEC(0) = 0x10000; //
 	IPC(4) = 0x1f; // Max
-	
+
 	// Start timer
   T4CONSET = 0x8000; // Bit 15
-  
+
   // - Output
   TRISFCLR = 0b000000000000100;				// Clock
   TRISFCLR = 0b000000000001000;				// Latch
@@ -183,7 +185,7 @@ void timer_init(void) {
   //TRISDCLR = 0b000000000000010;
   //TRISDCLR = 0b000000000000100;
   //TRISDCLR = 0b000001000000000;
-  
+
   PORTFCLR = 0b000000000000100;				// 00000001
 	PORTFCLR = 0b000000000001000;				// 00000010
 	//PORTDSET = 0b000000100000000;				// 00000100
@@ -192,8 +194,8 @@ void timer_init(void) {
 	//PORTDSET = 0b000000000000010;				// 00100000
 	//PORTDSET = 0b000000000000100;				// 01000000
 	//PORTDSET = 0b000001000000000;				// 10000000
-  
-	
+
+
 }
 
 void user_isr(void) {
@@ -208,25 +210,32 @@ void user_isr(void) {
 
 	}*/
 
-	// Timer 4: 
+	// Timer 4:
 	// Controller Read
 	// Frame update
 	if((IFS(0) >> 16) & 1) {
 		// Clear flag
 	  IFSCLR(0) = 0x10000;
-	  
+
 	  // Frames
 	  if (timer_count >= 80 && in_game > 0) {
 	  	frame_update();
 	  	timer_count = 0;
-	  	
+
 	  }
+
+		// Options blinker
+		if(blink_counter >= 2000 && in_options == 1)
+		{
+			blink_function();
+			blink_counter = 0;
+		}
 
 	  // Clock controller
 	  if (clock_edge == 0) {
 			PORTFSET = 0b000000000000100;
 			clock_edge = 1;
-			
+
 		} else {
 			PORTFCLR = 0b000000000000100;
 
@@ -258,9 +267,9 @@ void user_isr(void) {
 			clock_edge = 0;
 
 		}
-		
-		timer_count++;
 
+		timer_count++;
+		blink_counter++;
 	}
 
 }
