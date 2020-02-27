@@ -40,6 +40,8 @@ void menu_layout(char arr[], uint8_t len, uint8_t row, uint8_t sect)
     l = 0;
   if(sect == 2)
     l = l + 64;
+  if(sect == 3)
+    l = (128 - len*8) / 2;
 
   DISPLAY_CHANGE_TO_COMMAND_MODE;
   spi_send_recv(0x22);

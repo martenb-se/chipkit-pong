@@ -11,6 +11,7 @@ uint8_t controller_input_a_buffer = 0;
 uint8_t controller_input_b = 0;
 uint8_t controller_input_b_buffer = 0;
 int blink_counter = 0;
+int credits_counter = 0;
 
 
 // Random number generation
@@ -231,6 +232,13 @@ void user_isr(void) {
 			blink_counter = 0;
 		}
 
+		// Credits screen
+		if(credits_counter >= 28000 && in_credits)
+		{
+			credits_function();
+			credits_counter = 0;
+		}
+
 	  // Clock controller
 	  if (clock_edge == 0) {
 			PORTFSET = 0b000000000000100;
@@ -270,6 +278,7 @@ void user_isr(void) {
 
 		timer_count++;
 		blink_counter++;
+		credits_counter++;
 	}
 
 }
