@@ -279,7 +279,7 @@ void screen_clear(void) {
 	int j = 0;
 
 	// Clear screen
-	for(j;j<4;j++) {
+	for(j;j<8;j++) {
 
 		DISPLAY_CHANGE_TO_COMMAND_MODE;
 		spi_send_recv(0x22);

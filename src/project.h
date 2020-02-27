@@ -63,6 +63,9 @@ void frame_update(void);
 void select_option(void);
 void check_buttons(void);
 extern uint8_t in_options;
+extern uint8_t in_credits;
+extern uint8_t in_menu;
+extern char menu_gametitle[16];
 
 // Playing
 extern uint8_t play_time_left;
