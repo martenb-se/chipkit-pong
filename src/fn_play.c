@@ -202,7 +202,7 @@ void move_ball() {
 	player_ball[0] = player_ball_movements[0][(int)player_ball_movement_pointer];
 	player_ball[1] = player_ball_movements[1][(int)player_ball_movement_pointer];
 	
-	if(ball_speed_temp != ball_speed)
+	if(ball_speed_temp != ball_speed && (1/ball_speed_temp) <= 1)
 		player_ball_movement_pointer += 1/ball_speed_temp;
 	else
 		player_ball_movement_pointer += 1/(double)ball_speed;
@@ -379,6 +379,133 @@ double ball_bounce_calculation(double angle, uint8_t use_y) {
 	return angle;
 }
 
+void ball_collision_action_player_bounce(uint8_t id_player) {
+	
+	PORTE = 0;
+	
+	// Move ball
+	player_ball[0] = (95 * id_player) + (1 - 2*id_player) * (PLAYER_INDENT + 2 + ball_size/2) + (1 - 2*id_player);
+	
+	// Bounce
+	// Upper Edge
+	if(player_ball[1] >= player_coordinates[id_player] - player_heights[id_player]/2 && player_ball[1] <= player_coordinates[id_player] - player_heights[id_player]/3) {
+
+		// Make angle	
+		if(player_ball_direction > PI - PI/12
+			&& player_ball_direction < PI + PI/12
+			|| (player_ball_direction < PI/12
+			|| player_ball_direction > 3*(PI/2) + (5*PI)/12)) {
+			player_ball_direction = (1+(id_player*4))*PI/6;
+		
+		// Moving down - return
+		} else if(player_ball_direction > PI && player_ball_direction < 2*PI) {
+			player_ball_direction += PI;
+			if(player_ball_direction > 2*PI)
+				player_ball_direction -= 2*PI;
+				
+			// Reset speed
+			ball_speed_temp = ball_speed;
+	
+		// Moving up - Increase speed
+		} else if (player_ball_direction > 0 && player_ball_direction < PI) {
+			player_ball_direction = (2*(1-id_player))*PI/3;
+			ball_speed_temp = (double)ball_speed/2;
+		
+		// Make angle	
+		} else {
+			player_ball_direction = (1+(id_player*4))*PI/6;
+			
+		}
+		
+	// Lower Edge
+	} else if(player_ball[1] <= player_coordinates[id_player] + player_heights[id_player]/2 && player_ball[1] >= player_coordinates[id_player] + player_heights[id_player]/3) {
+	
+		// Make angle	
+		if(player_ball_direction > PI - PI/12
+			&& player_ball_direction < PI + PI/12 ||
+			(player_ball_direction < PI/12
+			|| player_ball_direction > 3*(PI/2) + (5*PI)/12)) {
+			player_ball_direction = (11-4*id_player)*(PI/6);
+			
+		// Moving up - Return
+		} else if (player_ball_direction > 0 && player_ball_direction < PI) {
+			player_ball_direction += PI;
+			if(player_ball_direction > 2*PI)
+				player_ball_direction -= 2*PI;
+			
+			// Reset speed
+			ball_speed_temp = ball_speed;
+	
+		// Moving down - Increase speed and angle
+		} else if(player_ball_direction > PI && player_ball_direction < 2*PI) {
+			player_ball_direction = (5-id_player)*(PI/3);
+			ball_speed_temp = (double)ball_speed/2;
+			
+		// Make angle	
+		} else {
+			player_ball_direction = (11-4*id_player)*(PI/6);
+			
+		}
+	
+	// Middle	
+	} else if (player_ball[1] >= player_coordinates[id_player] - 1 && player_ball[1] <= player_coordinates[id_player] + 1) {
+		
+		// Increase speed
+		if(player_ball_direction > PI - PI/12
+			&& player_ball_direction < PI + PI/12
+			|| (player_ball_direction < PI/12
+			|| player_ball_direction > 3*(PI/2) + (5*PI)/12)) {
+			ball_speed_temp = (double)ball_speed/2;
+		}
+		
+		player_ball_direction = (id_player)*PI;
+	
+	// Bounce	
+	} else {
+		
+		player_ball_direction = ball_bounce_calculation(player_ball_direction, 1);
+		
+	}
+	
+	if(sound_on == 1)
+		play_sound(300, 10, 1);
+	
+	// Reset movement pointer
+	player_ball_movement_pointer = 0;
+	
+}
+
+void ball_collision_action_score(uint8_t on_right) {
+	// Reset speed
+	ball_speed_temp = ball_speed;
+
+	// Reset ball
+	player_ball[0] = 48;
+	player_ball[1] = 16;
+	
+	// Direct opposite
+	player_ball_direction = ((1-on_right)*(PI/2) + PI/6) + (PI/6)/rand() + ((3*on_right)*PI/2) * (rand()%2);
+	player_ball_movement_pointer = 0;
+	
+	// Update scores
+	if (!on_right) {
+		sc1++;
+		display_score(sc1, 0);
+	} else {
+		sc2++;
+		display_score(sc2, 1);
+	}
+	
+	// Game over?
+	if(play_mode_score > 0 && (sc1 == play_mode_score || sc2 == play_mode_score)) {
+		play_state = 0x80;
+		// Catch holding
+		player_holds[ID_PLAYER_LEFT] = 1;
+		player_holds[ID_PLAYER_RIGHT] = 1;	
+	}
+	
+}
+
 void ball_collision_detection(void) {
 	
 	// Out of bounds fix
@@ -419,219 +546,24 @@ void ball_collision_detection(void) {
 	} else if (player_ball[0] <= PLAYER_INDENT + 2 + ball_size/2 && player_ball[0] >= PLAYER_INDENT + 1 + ball_size/2
 		&& (player_ball[1] >= player_coordinates[ID_PLAYER_LEFT] - player_heights[ID_PLAYER_LEFT]/2 && player_ball[1] <= player_coordinates[ID_PLAYER_LEFT] + player_heights[ID_PLAYER_LEFT]/2)) {
 		
-		// Move ball
-		player_ball[0] = PLAYER_INDENT + 2 + ball_size/2 + 1;
-		
-		// Bounce
-		// Upper Edge
-		if(player_ball[1] >= player_coordinates[ID_PLAYER_LEFT] - player_heights[ID_PLAYER_LEFT]/2 && player_ball[1] < player_coordinates[ID_PLAYER_LEFT] - player_heights[ID_PLAYER_LEFT]/3) {
-			
-			// Make angle	
-			if(player_ball_direction > PI - PI/12
-				&& player_ball_direction < PI + PI/12) {
-				player_ball_direction = PI/6;
-			
-			// Moving down - return
-			} else if(player_ball_direction > PI && player_ball_direction < 2*PI) {
-				player_ball_direction += PI;
-				if(player_ball_direction > 2*PI)
-					player_ball_direction -= 2*PI;
-					
-				// Reset speed
-				ball_speed_temp = ball_speed;
-		
-			// Moving up - Increase speed
-			} else if (player_ball_direction > 0 && player_ball_direction < PI) {
-				player_ball_direction = PI/3;
-				ball_speed_temp = (double)ball_speed/2;
-			
-			// Make angle	
-			} else {
-				player_ball_direction = PI/6;
-				
-			}
-			
-		// Lower Edge
-		} else if(player_ball[1] <= player_coordinates[ID_PLAYER_LEFT] + player_heights[ID_PLAYER_LEFT]/2 && player_ball[1] > player_coordinates[ID_PLAYER_LEFT] + player_heights[ID_PLAYER_LEFT]/3) {
-
-			// Make angle	
-			if(player_ball_direction > PI - PI/12
-				&& player_ball_direction < PI + PI/12) {
-				player_ball_direction = 11*(PI/6);
-				
-			// Moving up - Return
-			} else if (player_ball_direction > 0 && player_ball_direction < PI) {
-				player_ball_direction += PI;
-				if(player_ball_direction > 2*PI)
-					player_ball_direction -= 2*PI;
-				
-				// Reset speed
-				ball_speed_temp = ball_speed;
-		
-			// Moving down - Increase speed and angle
-			} else if(player_ball_direction > PI && player_ball_direction < 2*PI) {
-				player_ball_direction = 5*(PI/3);
-				ball_speed_temp = (double)ball_speed/2;
-				
-			// Make angle	
-			} else {
-				player_ball_direction = 11*(PI/6);
-				
-			}
-		
-		// Middle	
-		} else if (player_ball[1] >= player_coordinates[ID_PLAYER_LEFT] - 1 && player_ball[1] <= player_coordinates[ID_PLAYER_LEFT] + 1) {
-			// Increase speed
-			if(player_ball_direction > PI - PI/12
-				&& player_ball_direction < PI + PI/12) {
-				ball_speed_temp = (double)ball_speed/2;
-			}
-			
-			player_ball_direction = 0;
-		
-		// Bounce	
-		} else {
-			player_ball_direction = ball_bounce_calculation(player_ball_direction, 1);
-			
-		}
-		
-		// Reset movement pointer
-		player_ball_movement_pointer = 0;
+		ball_collision_action_player_bounce(ID_PLAYER_LEFT);
 		
 	// Collistion on score (beside left player)
 	} else if (player_ball[0] <= ball_size/2 + 2) {
 		
-		// Reset speed
-		ball_speed_temp = ball_speed;
-		
-		// Reset ball
-		player_ball[0] = 48;
-		player_ball[1] = 16;
-		
-		// Direct opposite
-		//player_ball_direction = PI/3;
-		player_ball_direction = PI/6 + (PI/6)/rand() + (3*(PI/2)) * (rand()%2);
-		
-		player_ball_movement_pointer = 0;
-		
-		// Update scores
-		sc2++;
-		display_score(sc2, 1);
-		
-		// Game over?
-		if(play_mode_score > 0 && sc2 == play_mode_score) {
-			play_state = 0x80;
-			// Catch holding
-			player_holds[ID_PLAYER_LEFT] = 1;
-			player_holds[ID_PLAYER_RIGHT] = 1;	
-		}
+		ball_collision_action_score(0);
 			
 		
 	// Collistion on right player
 	} else if (player_ball[0] >= 95 - (PLAYER_INDENT + 2 + ball_size/2) && player_ball[0] <= 95 - (PLAYER_INDENT + 1 + ball_size/2)
 		&& (player_ball[1] >= player_coordinates[ID_PLAYER_RIGHT] - player_heights[ID_PLAYER_LEFT]/2 && player_ball[1] <= player_coordinates[ID_PLAYER_RIGHT] + player_heights[ID_PLAYER_LEFT])) {
-			
-		// Reset speed
-		ball_speed_temp = ball_speed;
-		
-		// Move ball
-		player_ball[0] = 95 - (PLAYER_INDENT + 2 + ball_size/2) - 1;
-		
-		// Bounce
-		// Upper Edge
-		if(player_ball[1] >= player_coordinates[ID_PLAYER_RIGHT] - player_heights[ID_PLAYER_LEFT]/2 && player_ball[1] < player_coordinates[ID_PLAYER_RIGHT] - player_heights[ID_PLAYER_LEFT]/3) {
-			
-			// Make angle	
-			if(player_ball_direction < PI/12
-				|| player_ball_direction > 3*(PI/2) + (5*PI)/12) {
-				player_ball_direction = 5*(PI/6);
-			
-			// Moving down - return
-			} else if(player_ball_direction > PI && player_ball_direction < 2*PI) {
-				player_ball_direction += PI;
-				if(player_ball_direction > 2*PI)
-					player_ball_direction -= 2*PI;
-		
-			// Moving up - Increase speed
-			} else if (player_ball_direction > 0 && player_ball_direction < PI) {
-				player_ball_direction = 2*(PI/3);
-				ball_speed_temp = (double)ball_speed/2;
-			
-			// Make angle	
-			} else {
-				player_ball_direction = 5*(PI/6);
-				
-			}
-			
-		// Lower Edge
-		} else if(player_ball[1] <= player_coordinates[ID_PLAYER_RIGHT] + player_heights[ID_PLAYER_LEFT]/2 && player_ball[1] > player_coordinates[ID_PLAYER_RIGHT] + player_heights[ID_PLAYER_LEFT]/3) {
 
-			// Make angle	
-			if(player_ball_direction < PI/12
-				|| player_ball_direction > 3*(PI/2) + (5*PI)/12) {
-				player_ball_direction = 7*(PI/6);
-				
-			// Moving up - Return
-			} else if (player_ball_direction > 0 && player_ball_direction < PI) {
-				player_ball_direction += PI;
-				if(player_ball_direction > 2*PI)
-					player_ball_direction -= 2*PI;
-		
-			// Moving down - Increase speed
-			} else if(player_ball_direction > PI && player_ball_direction < 2*PI) {
-				player_ball_direction = 4*(PI/3);
-				ball_speed_temp = (double)ball_speed/2;
-				
-			// Make angle	
-			} else {
-				player_ball_direction = 7*(PI/6);
-				
-			}
-		
-		// Middle	
-		} else if (player_ball[1] >= player_coordinates[ID_PLAYER_RIGHT] - 1 && player_ball[1] <= player_coordinates[ID_PLAYER_RIGHT] + 1) {
-			// Increase speed
-			if(player_ball_direction < PI/12
-				|| player_ball_direction > 3*(PI/2) + (5*PI)/12) {
-				ball_speed_temp = (double)ball_speed/2;
-			}
-			
-			player_ball_direction = PI;
-		
-		// Bounce	
-		} else {
-			player_ball_direction = ball_bounce_calculation(player_ball_direction, 1);
-			
-		}
-			
-		player_ball_movement_pointer = 0;
+		ball_collision_action_player_bounce(ID_PLAYER_RIGHT);
 		
 	// Collistion on score (beside right player)
 	} else if (player_ball[0] >= 94 - ball_size/2) {
 		
-		// Reset speed
-		ball_speed_temp = ball_speed;
-
-		// Reset ball
-		player_ball[0] = 48;
-		player_ball[1] = 16;
-		
-		// Direct opposite
-		player_ball_direction = (PI/2 + PI/6) + (PI/6)/rand() + (PI/2) * (rand()%2);
-		
-		player_ball_movement_pointer = 0;
-		
-		// Update scores
-		sc1++;
-		display_score(sc1, 0);
-		
-		// Game over?
-		if(play_mode_score > 0 && sc1 == play_mode_score) {
-			play_state = 0x80;
-			// Catch holding
-			player_holds[ID_PLAYER_LEFT] = 1;
-			player_holds[ID_PLAYER_RIGHT] = 1;	
-		}
+		ball_collision_action_score(1);
 		
 	}
 	

@@ -3,6 +3,7 @@
 #include "project.h"
 
 uint8_t in_game = 0;
+uint8_t sound_on = 1;
 
 int main()
 {
@@ -53,11 +54,14 @@ int main()
 	// Clear screen on program start
 	screen_clear();
 
+	// Input/Output init
+	io_init();
+
 	// Enable inputs and frames
 	timer_init();
-
-	// Enable timer for frames
-	//frame_init();
+	
+	// Sount init
+	sound_init();
 
 	// Enable interrupts
 	enable_interrupt();

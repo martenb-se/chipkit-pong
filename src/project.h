@@ -47,7 +47,12 @@ void screen_clear(void);
 
 // Main
 extern uint8_t in_game;
+extern uint8_t sound_on;
 unsigned int rand(void);
+
+// Sound
+void sound_init(void);
+void play_sound(uint16_t frequency, uint16_t duration, uint16_t delay);
 
 // Input
 extern uint8_t controller_input_a;

@@ -289,6 +289,9 @@ void options_menu(void)
     if (((controller_input_a >> 4) & 1)                                           // if SELECT is pressed
     || ((controller_input_b >> 4) & 1))			                                      // if SELECT is pressed
     {
+    	if(sound_on == 1)
+				play_sound(200, 50, 1);
+				
       if(option_row == 1)
         cur_option_pad++;
       if(option_row == 2)
@@ -315,6 +318,8 @@ void options_menu(void)
     if (((controller_input_a >> 1) & 1)			                                      // if player left DOWN is pressed
   	|| ((controller_input_b >> 1) & 1))	                                          // if player right DOWN is pressed
     {
+    	if(sound_on == 1)
+				play_sound(200, 50, 1);
       blink_off_or_on = 1;
       blink_function();
       option_row++;
@@ -330,6 +335,8 @@ void options_menu(void)
     if (((controller_input_a >> 2) & 1)			                                      // if player left UP is pressed
   	|| ((controller_input_b >> 2) & 1))	                                          // if player right UP is pressed
     {
+    	if(sound_on == 1)
+				play_sound(200, 50, 1);
       blink_off_or_on = 1;
       blink_function();
       option_row--;
@@ -509,6 +516,8 @@ void check_buttons(void)
       if ((!(controller_input_a >> 4) & 1)					// if player left SELECT is released
   			&& (!(controller_input_b >> 4) & 1))				// if player right SELECT is released
       {
+      	if(sound_on == 1)
+					play_sound(200, 50, 1);
         selected_option++;
         if(selected_option > 3)
           selected_option = 0;

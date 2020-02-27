@@ -13,6 +13,11 @@ uint8_t controller_input_b_buffer = 0;
 int blink_counter = 0;
 int credits_counter = 0;
 
+uint8_t timer_count_sounds = 0;
+uint8_t sound_status = 0;
+uint16_t sound_period = 0;
+uint16_t sound_duration = 0;
+uint16_t sound_delay = 0;
 
 // Random number generation
 unsigned int rand_next = 0xd131;
@@ -23,6 +28,72 @@ unsigned int rand(void)
 {
 	rand_next = TMR3;
 	return rand_next;
+}
+
+// Enable input/output
+void io_init(void) {
+	// - Output
+  TRISFCLR = 0b000000000000100;				// Controller - Clock
+  TRISFCLR = 0b000000000001000;				// Controller - Latch
+  TRISDSET = 0b000000100000000; 			// Controller - Data Input 1
+  TRISDSET = 0b000000000000001; 			// Controller - Data Input 2
+  //TRISFCLR = 0b000000000000010;
+  TRISDCLR = 0b000000000000010;				// Buzzer (OC2)
+  //TRISDCLR = 0b000000000000100;
+  //TRISDCLR = 0b000001000000000;
+  
+  PORTFCLR = 0b000000000000100;				// 00000001
+	PORTFCLR = 0b000000000001000;				// 00000010
+	//PORTDSET = 0b000000100000000;				// 00000100
+	//PORTDSET = 0b000000000000001;				// 00001000
+	//PORTFSET = 0b000000000000010;				// 00010000
+	PORTDCLR = 0b000000000000010;				// 00100000
+	//PORTDSET = 0b000000000000100;				// 01000000
+	//PORTDSET = 0b000001000000000;				// 10000000
+
+}
+
+void sound_init(void) {
+	// Turn off the OC2 when performing the setup
+	OC2CON = 0;
+	// Initialize primary compare register (master)
+  OC2R = 0; 
+  // Initialize secondary compare register (slave)
+  OC2RS = 0;
+  
+  OC2CON = 0x6; // Configure for PWM mode without Fault pin enabled
+  
+  // User Timer 2
+  //OC2CONCLR = 0x8; // No need since all bits are cleared
+  
+  // Enable OC2
+  OC2CONSET = 0x8000;// Enable OC2
+}
+
+// Play sound
+void play_sound(uint16_t frequency, uint16_t duration, uint16_t delay) {
+	
+	if(sound_status == 0) {
+		// Reset timer
+		TMR2 = 0;
+		
+		// Calculate period, duration and delay
+		sound_period = 80000000 / 64 / frequency;
+		//sound_duration = (int)((float)sound_current[1]*((float)sound_current[0]/(float)1000));
+		sound_duration = duration;
+		sound_delay = delay;
+		
+		// Initialize the PWM 
+		PR2 = sound_period; 							// 2840, 440 interrupts/second
+		
+		// Initialize slave register
+		OC2RS = (int) (sound_period/10); 	// 284
+		
+		// Set status flag
+		sound_status = 1;
+
+	}
+	
 }
 
 void display_init(void) {
@@ -63,45 +134,6 @@ uint8_t spi_send_recv(uint8_t data) {
 																					    // Waiting until byte is recieved
 	return SPI2BUF;
 }
-
-/*void display_string(int line, char *s) {
-	int i;
-	if(line < 0 || line >= 4)
-		return;
-	if(!s)
-		return;
-
-	for(i = 0; i < 16; i++)
-		if(*s) {
-			textbuffer[line][i] = *s;
-			s++;
-		} else
-			textbuffer[line][i] = ' ';
-}
-
-void display_update(void) {
-	int i, j, k;
-	int c;
-	for(i = 0; i < 4; i++) {
-		DISPLAY_CHANGE_TO_COMMAND_MODE;
-		spi_send_recv(0x22);
-		spi_send_recv(i);
-
-		spi_send_recv(0x0);
-		spi_send_recv(0x10);
-
-		DISPLAY_CHANGE_TO_DATA_MODE;
-
-		for(j = 0; j < 16; j++) {
-			c = textbuffer[i][j];
-			if(c & 0x80)
-				continue;
-
-			for(k = 0; k < 8; k++)
-				spi_send_recv(font[c*8 + k]);
-		}
-	}
-}*/
 
 void quicksleep(int cyc) {
 	int i;
@@ -149,67 +181,51 @@ void frame_update(void) {
 
 void timer_init(void) {
 
-	// Random number timer
+	// - Random number timer
 	TMR3 = 0;
-	T3CONCLR = 0x70; // Clear 6:4 (set prescale 1:1)
 	PR3 = 65293;
+	// Set prescale to 1:1
+	T3CONCLR = 0x70;
 	// Turn on
-	T3CONSET = 0x8000; // Bit 15
+	T3CONSET = 0x8000;
+	
+	// - Sound timer
+	TMR2 = 0;
+	PR2 = 0;
+	// Clear flag
+  IFSCLR(0) = 0x100;
+  // Enable interrupts for Timer 2
+  IECSET(0) = 0x100;
+  IPCSET(2) = 0x1c; // Lower than controller
+	// Set prescale to 1:64 and turn on
+	T2CONSET = 0x8060;
 
-	// Controller and frame timer
-	TRISD = TRISD | 0xe0; // 0b0000 0000 1110 0000
-  TRISF = TRISF | 1;
+	// - Controller and frame timer
+	//TRISD = TRISD | 0xe0; // 0b0000 0000 1110 0000
+  //TRISF = TRISF | 1;
   TMR4 = 0;
-  T4CONSET = 0x40;
-
-  // Use a period of (50000/(8*2)/5) 625 (8*5 rising edges per frame)
+	// Use a period of (50000/(8*2)/5) 625 (8*5 rising edges per frame)
   // Get 5 inputs every frame
   // One frame every 0.01s
   PR4 = 625;
 
   // Clear flag
   IFSCLR(0) = 0x10000;
-
-  // Enable interrupts for Timer 4
-	IEC(0) = 0x10000; //
+	// Enable interrupts for Timer 4
+	IEC(0) = 0x10000;
 	IPC(4) = 0x1f; // Max
 
-	// Start timer
-  T4CONSET = 0x8000; // Bit 15
-
-  // - Output
-  TRISFCLR = 0b000000000000100;				// Clock
-  TRISFCLR = 0b000000000001000;				// Latch
-  TRISDSET = 0b000000100000000; 			// Data Input 1
-  TRISDSET = 0b000000000000001; 			// Data Input 2
-  //TRISFCLR = 0b000000000000010;
-  //TRISDCLR = 0b000000000000010;
-  //TRISDCLR = 0b000000000000100;
-  //TRISDCLR = 0b000001000000000;
-
-  PORTFCLR = 0b000000000000100;				// 00000001
-	PORTFCLR = 0b000000000001000;				// 00000010
-	//PORTDSET = 0b000000100000000;				// 00000100
-	//PORTDSET = 0b000000000000001;				// 00001000
-	//PORTFSET = 0b000000000000010;				// 00010000
-	//PORTDSET = 0b000000000000010;				// 00100000
-	//PORTDSET = 0b000000000000100;				// 01000000
-	//PORTDSET = 0b000001000000000;				// 10000000
-
+	// Set prescale to 1:16 and turn on
+  T4CONSET = 0x8040;
 
 }
 
 void user_isr(void) {
-	// Timer 2: Frame update
-	/*if((IFS(0) >> 8) & 1) {
+	// Timer 2: Sounds
+	if((IFS(0) >> 8) & 1) {
 		IFSCLR(0) = 0x100;
 
-		// Run frame updates if in game
-		if(in_game > 0) {
-			frame_update();
-		}
-
-	}*/
+	}
 
 	// Timer 4:
 	// Controller Read
@@ -217,6 +233,36 @@ void user_isr(void) {
 	if((IFS(0) >> 16) & 1) {
 		// Clear flag
 	  IFSCLR(0) = 0x10000;
+	  
+	  // Sounds
+	  // Start playing at every millisecond
+	  if (timer_count_sounds >= 8) {
+	  	timer_count_sounds = 0;
+	  	
+	  	if (sound_status == 1) {
+	  	
+		  	// Keep playing sound
+		  	if (sound_duration > 0)
+		  		sound_duration--;
+				// Stop playing
+				else if (sound_duration == 0) {
+					OC2RS = 0;
+		  		PR2 = 0;
+				}
+		  		
+		  	// Wait until next sound
+		  	if (sound_duration == 0 && sound_delay > 0)
+		  		sound_delay--;
+		  	// Play next sound
+		  	else if (sound_duration == 0 && sound_delay == 0) {
+		  		
+		  		sound_status = 0;
+		  		
+		  	}
+	  	
+	  	}
+	  	
+	  }
 
 	  // Frames
 	  if (timer_count >= 80 && in_game > 0) {
@@ -262,7 +308,7 @@ void user_isr(void) {
       clock_count++;
 
       if(clock_count > 7) {
-        PORTE = ~controller_input_a_buffer; // Show input on lamps
+        //PORTE = ~controller_input_a_buffer; // Show input on lamps
         //PORTE = ~controller_input_b_buffer; // Show input on lamps
         controller_input_a = ~controller_input_a_buffer;
         controller_input_b = ~controller_input_b_buffer;
@@ -277,6 +323,7 @@ void user_isr(void) {
 		}
 
 		timer_count++;
+		timer_count_sounds++;
 		blink_counter++;
 		credits_counter++;
 	}
