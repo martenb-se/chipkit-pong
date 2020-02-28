@@ -32,6 +32,7 @@
 
 // Error handling
 extern int errno;
+extern uint8_t controller_plugged;
 
 //
 void display_init(void);

@@ -67,8 +67,9 @@ void vertical_scrolling_credits(void)
 
   while(in_credits)
   {
-    if (((controller_input_a >> 5) & 1)			                                      // if player left B is pressed
-  	|| ((controller_input_b >> 5) & 1))			                                      // if player right B is pressed
+    if (controller_plugged &&
+    	(((controller_input_a >> 5) & 1)			                                      // if player left B is pressed
+  	|| ((controller_input_b >> 5) & 1)))			                                      // if player right B is pressed
     {
       spi_send_recv(0x2E);                        // This command stops the motion of scrolling
       screen_clear();

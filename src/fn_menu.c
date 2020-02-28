@@ -422,8 +422,9 @@ void menu_select(uint8_t row1, uint8_t row2, uint8_t col1, uint8_t col2)
 
 void select_option(void)
 {
-  if (((controller_input_a >> 6) & 1)			             // if player left A is pressed
-    || ((controller_input_b >> 6) & 1))			           // if player right A is pressed
+  if (controller_plugged &&
+  	(((controller_input_a >> 6) & 1)			             // if player left A is pressed
+    || ((controller_input_b >> 6) & 1)))			           // if player right A is pressed
   {
   	if(selected_option == 0)                           // if arrow points to 1-player mode
     {
@@ -497,7 +498,8 @@ void select_option(void)
     {
       screen_clear();
       
-      music_play_got = 1;
+      if(sound_on == 1)
+      	music_play_got = 1;
       
       in_credits = 1;
       vertical_scrolling_credits();
@@ -510,8 +512,9 @@ void select_option(void)
 
 void check_buttons(void)
 {
-  if (((controller_input_a >> 4) & 1)			          // if player left SELECT is pressed
-  	|| ((controller_input_b >> 4) & 1))			        // if player right SELECT is pressed
+  if (controller_plugged &&
+  	(((controller_input_a >> 4) & 1)			          // if player left SELECT is pressed
+  	|| ((controller_input_b >> 4) & 1)))			        // if player right SELECT is pressed
   {
     button_press = 1;
     while(button_press == 1)

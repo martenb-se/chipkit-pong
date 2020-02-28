@@ -13,6 +13,8 @@ uint8_t controller_input_b_buffer = 0;
 int blink_counter = 0;
 int credits_counter = 0;
 
+uint8_t controller_plugged = 1;
+
 // Sounds
 uint8_t timer_count_sounds = 0;
 uint8_t sound_status = 0;
@@ -58,6 +60,26 @@ void io_init(void) {
 
 }
 
+// 
+/*void controller_catch(void) {
+	if(controller_input_a == 0xff && controller_input_b == 0xff) {
+		controller_plugged = 0;
+		
+		// Clear screen
+		screen_clear();
+		
+		// Draw field
+		draw_playing_field();
+		
+		// Message
+		draw_message("PLUG IN\nBOTH\nCONTROLLERS!");
+		
+		play_xy_update();
+		
+	}
+	
+}*/
+
 void sound_init(void) {
 	// Turn off the OC2 when performing the setup
 	OC2CON = 0;
@@ -93,10 +115,10 @@ void play_sound(uint16_t frequency, uint16_t duration, uint16_t delay) {
 			sound_delay = 1;
 		
 		// Initialize the PWM 
-		PR2 = sound_period; 							// 2840, 440 interrupts/second
+		PR2 = sound_period;
 		
 		// Initialize slave register
-		OC2RS = (int) (sound_period/10); 	// 284
+		OC2RS = (int) (sound_period/10);
 		
 		// Set status flag
 		sound_status = 1;
@@ -288,9 +310,12 @@ void user_isr(void) {
 		// Clear flag
 	  IFSCLR(0) = 0x10000;
 	  
+	  // Unplugged controllers
+	  //controller_catch();
+	  
 	  // Sounds
 	  // Start playing at every millisecond
-	  if (timer_count_sounds >= 8) {
+	  if (controller_plugged && timer_count_sounds >= 8) {
 	  	timer_count_sounds = 0;
 	  	
 	  	if (sound_status == 1) {
@@ -318,27 +343,28 @@ void user_isr(void) {
 	  	
 	  }
 	  
-	  if (timer_count >= 80) {
+	  // Music
+	  if (controller_plugged && timer_count >= 80) {
 	  	//konami();
 	  	music_got_playing();
 	  }
 
 	  // Frames
-	  if (timer_count >= 80 && in_game > 0) {
+	  if (controller_plugged && timer_count >= 80 && in_game > 0) {
 	  	frame_update();
 	  	timer_count = 0;
 
 	  }
 
 		// Options blinker
-		if(blink_counter >= 2000 && in_options == 1)
+		if(controller_plugged && blink_counter >= 2000 && in_options == 1)
 		{
 			blink_function();
 			blink_counter = 0;
 		}
 
 		// Credits screen
-		if(credits_counter >= 28000 && in_credits)
+		if(controller_plugged && credits_counter >= 28000 && in_credits)
 		{
 			credits_function();
 			credits_counter = 0;

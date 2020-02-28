@@ -502,6 +502,11 @@ void ball_collision_action_score(uint8_t on_right) {
 		// Catch holding
 		player_holds[ID_PLAYER_LEFT] = 1;
 		player_holds[ID_PLAYER_RIGHT] = 1;
+		
+	} else {
+		if(sound_on == 1)
+			play_sound(50, 200, 1);
+		
 	}
 	
 }
