@@ -191,7 +191,6 @@ void frame_update(void) {
 void music_got_playing() {
 	
 	if (sound_status == 0 && music_play_got) {
-		PORTE = music_iteration;
 		
 		if(music_iteration < 8*4) {
 			if(music_iteration%4 == 0)
