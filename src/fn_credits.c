@@ -76,6 +76,10 @@ void vertical_scrolling_credits(void)
       credits_page = 0;
       in_credits = 0;
       in_menu = 1;
+      
+      music_iteration = 0;
+      music_play_got = 0;
+      
       while(in_menu)
       {
     		check_buttons();

@@ -484,16 +484,16 @@ void ball_collision_action_score(uint8_t on_right) {
 	player_ball[1] = 16;
 	
 	// Direct opposite
-	player_ball_direction = ((1-on_right)*(PI/2) + PI/6) + (PI/6)/rand() + ((3*on_right)*PI/2) * (rand()%2);
+	player_ball_direction = ((on_right)*(PI/2) + PI/6) + (PI/6)/rand() + ((3-(on_right*2))*PI/2) * (rand()%2);
 	player_ball_movement_pointer = 0;
 	
 	// Update scores
 	if (!on_right) {
-		sc1++;
-		display_score(sc1, 0);
-	} else {
 		sc2++;
-		display_score(sc2, 1);
+		display_score(sc2, 0);
+	} else {
+		sc1++;
+		display_score(sc1, 1);
 	}
 	
 	// Game over?
@@ -501,7 +501,7 @@ void ball_collision_action_score(uint8_t on_right) {
 		play_state = 0x80;
 		// Catch holding
 		player_holds[ID_PLAYER_LEFT] = 1;
-		player_holds[ID_PLAYER_RIGHT] = 1;	
+		player_holds[ID_PLAYER_RIGHT] = 1;
 	}
 	
 }

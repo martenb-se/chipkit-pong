@@ -12,14 +12,14 @@
 
 #define PI 3.14159265
 
-#define BIT_BUTTON_LEFT								1
-#define BIT_BUTTON_RIGHT							1
-#define BIT_BUTTON_UP									1
+#define BIT_BUTTON_LEFT								0
+#define BIT_BUTTON_RIGHT							7
+#define BIT_BUTTON_UP									2
 #define BIT_BUTTON_DOWN								1
-#define BIT_BUTTON_START							1
-#define BIT_BUTTON_SELECT							1
-#define BIT_BUTTON_A									1
-#define BIT_BUTTON_B									1
+#define BIT_BUTTON_START							3
+#define BIT_BUTTON_SELECT							4
+#define BIT_BUTTON_A									6
+#define BIT_BUTTON_B									5
 
 #define DATA_BUTTON_LEFT(ctrl_data)   ((ctrl_data >> BIT_BUTTON_LEFT) & 1)
 #define DATA_BUTTON_RIGHT(ctrl_data)  ((ctrl_data >> BIT_BUTTON_RIGHT) & 1)
@@ -51,8 +51,13 @@ extern uint8_t sound_on;
 unsigned int rand(void);
 
 // Sound
+extern uint8_t sound_status;
 void sound_init(void);
 void play_sound(uint16_t frequency, uint16_t duration, uint16_t delay);
+
+extern uint8_t music_play_got;
+extern uint8_t music_iteration;
+void music_got_playing();
 
 // Input
 extern uint8_t controller_input_a;

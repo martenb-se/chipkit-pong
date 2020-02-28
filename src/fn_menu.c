@@ -496,6 +496,9 @@ void select_option(void)
     if(selected_option == 3)                          // if arrow points to credits
     {
       screen_clear();
+      
+      music_play_got = 1;
+      
       in_credits = 1;
       vertical_scrolling_credits();
       while(1)

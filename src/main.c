@@ -65,7 +65,7 @@ int main()
 
 	// Enable interrupts
 	enable_interrupt();
-
+	
 	start_menu();					// not needed in while loop
 	while(1)
 	{

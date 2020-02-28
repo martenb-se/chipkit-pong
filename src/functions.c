@@ -13,11 +13,16 @@ uint8_t controller_input_b_buffer = 0;
 int blink_counter = 0;
 int credits_counter = 0;
 
+// Sounds
 uint8_t timer_count_sounds = 0;
 uint8_t sound_status = 0;
 uint16_t sound_period = 0;
 uint16_t sound_duration = 0;
 uint16_t sound_delay = 0;
+
+// Music
+uint8_t music_play_got = 0;
+uint8_t music_iteration = 0;
 
 // Random number generation
 unsigned int rand_next = 0xd131;
@@ -82,6 +87,10 @@ void play_sound(uint16_t frequency, uint16_t duration, uint16_t delay) {
 		//sound_duration = (int)((float)sound_current[1]*((float)sound_current[0]/(float)1000));
 		sound_duration = duration;
 		sound_delay = delay;
+		
+		// Bug
+		if (sound_delay == 0)
+			sound_delay = 1;
 		
 		// Initialize the PWM 
 		PR2 = sound_period; 							// 2840, 440 interrupts/second
@@ -179,6 +188,52 @@ void frame_update(void) {
 
 }
 
+void music_got_playing() {
+	
+	if (sound_status == 0 && music_play_got) {
+		PORTE = music_iteration;
+		
+		if(music_iteration < 8*4) {
+			if(music_iteration%4 == 0)
+				play_sound(392, 500, 0);
+			if(music_iteration%4 == 1)
+				play_sound(262, 500, 0);
+			if(music_iteration%4 == 2 && (music_iteration < 4*4 || music_iteration >= 7*4))
+				play_sound(311, 250, 0);
+			else 
+				play_sound(330, 250, 0);
+			if(music_iteration%4 == 3)
+				play_sound(349, 250, 0);
+		}
+		
+		if(music_iteration >= 7*4 && (music_iteration - 7*4) < 2*4) {
+			if((music_iteration - 7*4)%4 == 0)
+				play_sound(294, 500, 0);
+			if((music_iteration - 7*4)%4 == 1)
+				play_sound(196, 500, 0);	
+			if((music_iteration - 7*4)%4 == 2)
+				play_sound(233, 250, 0);
+			if((music_iteration - 7*4)%4 == 3)
+				play_sound(262, 250, 0);
+		}
+		
+		if(music_iteration >= 7*4 + 2*4) {
+			music_iteration = 0;
+			music_play_got = 0;
+			
+			// Loop in credits
+			if(in_credits == 1) {
+				music_play_got = 1;
+			}
+			
+		} else {
+			music_iteration++;
+		}
+		
+	}
+		
+}
+
 void timer_init(void) {
 
 	// - Random number timer
@@ -262,6 +317,11 @@ void user_isr(void) {
 	  	
 	  	}
 	  	
+	  }
+	  
+	  if (timer_count >= 80) {
+	  	//konami();
+	  	music_got_playing();
 	  }
 
 	  // Frames
@@ -354,3 +414,4 @@ void screen_clear(void) {
 
 	}
 }
+
