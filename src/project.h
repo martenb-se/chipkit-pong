@@ -32,7 +32,6 @@
 
 // Error handling
 extern int errno;
-extern uint8_t controller_plugged;
 
 //
 void display_init(void);
@@ -78,7 +77,6 @@ extern uint8_t in_credits;
 extern uint8_t in_menu;
 extern char menu_gametitle[16];
 extern int credits_counter;
-void write_to_display(char arr[], uint8_t len, uint8_t row, uint8_t col);
 
 // Playing
 extern uint8_t play_time_left;
