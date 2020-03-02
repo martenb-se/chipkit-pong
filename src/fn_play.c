@@ -19,10 +19,7 @@ int errno = 0;
 uint8_t play_time_left = 90;									// Time left to play
 /*
 
-Might be replaced with one uint8_t
-uint8_t play_state = 0b00000000;
-
-// Table
+// State table
       STATE   DATA
 0b    0000    0000 = Not used
 0b    0000    0000 = Not used
@@ -297,6 +294,7 @@ void cpu_movement() {
 	
 }
 
+// Check player moves
 void check_player_moves(void) {
 	
 	// Not game over
@@ -477,6 +475,7 @@ void ball_collision_action_player_bounce(uint8_t id_player) {
 	
 }
 
+// Score detection
 void ball_collision_action_score(uint8_t on_right) {
 	// Reset speed
 	ball_speed_temp = ball_speed;
@@ -513,6 +512,7 @@ void ball_collision_action_score(uint8_t on_right) {
 	
 }
 
+// Collision detection for ball
 void ball_collision_detection(void) {
 	
 	// Out of bounds fix
@@ -585,6 +585,7 @@ void draw_playing_field(void) {
 	}
 }
 
+// Send players to buffer
 void draw_players(void) {
 	int i;
 	
@@ -600,6 +601,7 @@ void draw_players(void) {
 	
 }
 
+// Send ball to buffer
 void draw_ball(void) {
 	int i, j;
 	
@@ -611,6 +613,7 @@ void draw_ball(void) {
 	}
 }
 
+// Send messages to buffer
 void draw_message(char *message) {
 
 	int r, i, j, k, row_off;
@@ -679,6 +682,7 @@ void draw_message(char *message) {
 	}
 }
 
+// Countdown timer 
 void timer_countdown(void) {
 	
 	// Timestamp to seconds
@@ -698,6 +702,7 @@ void timer_countdown(void) {
 	
 }
 
+// Send timer to buffer
 void draw_timer(int time) {
 	int i, j, k;
 	
@@ -719,10 +724,8 @@ void draw_timer(int time) {
 	}
 }
 
+// Update playing field
 void playing_field_update(void) {	
-	
-	// Clear playing field
-	playbuffer_clear();
 	
 	// Draw field
 	draw_playing_field();
@@ -777,9 +780,14 @@ void playing_field_update(void) {
 		
 	}
 	
+	// Clear playing field
+	playbuffer_clear();
+	
+	// Send pixels to screen
 	play_xy_update();
 }
 
+// Reset playdata
 void playing_reset(int exit) {
 	// Reset status
 	ball_speed_temp = ball_speed;

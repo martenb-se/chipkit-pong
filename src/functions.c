@@ -60,26 +60,7 @@ void io_init(void) {
 
 }
 
-// 
-/*void controller_catch(void) {
-	if(controller_input_a == 0xff && controller_input_b == 0xff) {
-		controller_plugged = 0;
-		
-		// Clear screen
-		screen_clear();
-		
-		// Draw field
-		draw_playing_field();
-		
-		// Message
-		draw_message("PLUG IN\nBOTH\nCONTROLLERS!");
-		
-		play_xy_update();
-		
-	}
-	
-}*/
-
+// Initiate sounds
 void sound_init(void) {
 	// Turn off the OC2 when performing the setup
 	OC2CON = 0;
@@ -106,7 +87,6 @@ void play_sound(uint16_t frequency, uint16_t duration, uint16_t delay) {
 		
 		// Calculate period, duration and delay
 		sound_period = 80000000 / 64 / frequency;
-		//sound_duration = (int)((float)sound_current[1]*((float)sound_current[0]/(float)1000));
 		sound_duration = duration;
 		sound_delay = delay;
 		
@@ -127,6 +107,7 @@ void play_sound(uint16_t frequency, uint16_t duration, uint16_t delay) {
 	
 }
 
+// Initiate display
 void display_init(void) {
   DISPLAY_CHANGE_TO_COMMAND_MODE;
 	quicksleep(10);
@@ -157,6 +138,7 @@ void display_init(void) {
 	spi_send_recv(0xAF);
 }
 
+// Send and recieve data over SPI
 uint8_t spi_send_recv(uint8_t data) {
 	while(!(SPI2STAT & 0x08));									// 0000 0000 0000 1000 = SPITBE (while SPITBE == 0)
 																						  // Waiting until transmitter is ready
@@ -166,11 +148,13 @@ uint8_t spi_send_recv(uint8_t data) {
 	return SPI2BUF;
 }
 
+// Sleep for some time
 void quicksleep(int cyc) {
 	int i;
 	for(i = cyc; i > 0; i--);
 }
 
+// Update frames
 void frame_update(void) {
 
 	// Run every frame (every 0.01 seconds)
@@ -210,6 +194,7 @@ void frame_update(void) {
 
 }
 
+// Play music from Game of Thrones
 void music_got_playing() {
 	
 	if (sound_status == 0 && music_play_got) {
@@ -255,6 +240,7 @@ void music_got_playing() {
 		
 }
 
+// Initiate timers
 void timer_init(void) {
 
 	// - Random number timer
@@ -296,6 +282,7 @@ void timer_init(void) {
 
 }
 
+// User interrupt handler
 void user_isr(void) {
 	// Timer 2: Sounds
 	if((IFS(0) >> 8) & 1) {
@@ -415,6 +402,7 @@ void user_isr(void) {
 
 }
 
+// Clear whole screen
 void screen_clear(void) {
 	int i;
 	int j = 0;
