@@ -66,28 +66,11 @@ int main()
 	// Enable interrupts
 	enable_interrupt();
 	
-	start_menu();					// not needed in while loop
+	start_menu();
 	while(1)
 	{
 		check_buttons();
 		select_option();
 	}
-
-	/*
-
-	// Initiation
-	// - In game
-	playing_field_init(); // Initiate playing field
-	// -- Scoreboard
-	display_left_score_update();
-	display_right_score_update();
-
-	while(1)
-	{
-		// Do nothing
-		quicksleep(10);
-	}
-
-	*/
 
 }
