@@ -371,6 +371,7 @@ void check_player_moves(void) {
 	
 }
 
+// Calculate bounces for the ball
 double ball_bounce_calculation(double angle, uint8_t use_y) {
 	angle = (-angle + (use_y*PI) + (2*PI));
 	if (angle > (2*PI))
@@ -379,6 +380,7 @@ double ball_bounce_calculation(double angle, uint8_t use_y) {
 	return angle;
 }
 
+// Collision on players
 void ball_collision_action_player_bounce(uint8_t id_player) {
 	
 	PORTE = 0;
@@ -408,7 +410,7 @@ void ball_collision_action_player_bounce(uint8_t id_player) {
 	
 		// Moving up - Increase speed
 		} else if (player_ball_direction > 0 && player_ball_direction < PI) {
-			player_ball_direction = (2*(1-id_player))*PI/3;
+			player_ball_direction = (1+id_player)*PI/3;
 			ball_speed_temp = (double)ball_speed/2;
 		
 		// Make angle	
@@ -561,7 +563,7 @@ void ball_collision_detection(void) {
 		
 	// Collistion on right player
 	} else if (player_ball[0] >= 95 - (PLAYER_INDENT + 2 + ball_size/2) && player_ball[0] <= 95 - (PLAYER_INDENT + 1 + ball_size/2)
-		&& (player_ball[1] >= player_coordinates[ID_PLAYER_RIGHT] - player_heights[ID_PLAYER_LEFT]/2 && player_ball[1] <= player_coordinates[ID_PLAYER_RIGHT] + player_heights[ID_PLAYER_LEFT])) {
+		&& (player_ball[1] >= player_coordinates[ID_PLAYER_RIGHT] - player_heights[ID_PLAYER_RIGHT]/2 && player_ball[1] <= player_coordinates[ID_PLAYER_RIGHT] + player_heights[ID_PLAYER_RIGHT]/2)) {
 
 		ball_collision_action_player_bounce(ID_PLAYER_RIGHT);
 		
