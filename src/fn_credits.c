@@ -14,6 +14,8 @@ uint8_t credits_page = 0;
 uint8_t in_credits = 0;
 
 
+// writes the text outside the defined page addresses
+// replaced every time the time the timer icrements credits_page by one
 void credits_function(void)
 {
   if(credits_page == 0)
@@ -49,6 +51,7 @@ void credits_function(void)
 }
 
 
+// define start and end page address to zero to achieve vertical scrolling
 void vertical_scrolling_credits(void)
 {
   credits_counter = 0;
@@ -67,9 +70,8 @@ void vertical_scrolling_credits(void)
 
   while(in_credits)
   {
-    if (controller_plugged &&
-    	(((controller_input_a >> 5) & 1)			                                      // if player left B is pressed
-  	|| ((controller_input_b >> 5) & 1)))			                                      // if player right B is pressed
+    if (((controller_input_a >> 5) & 1)			                                      // if player left B is pressed
+  	|| ((controller_input_b >> 5) & 1))			                                      // if player right B is pressed
     {
       spi_send_recv(0x2E);                        // This command stops the motion of scrolling
       screen_clear();
@@ -77,10 +79,6 @@ void vertical_scrolling_credits(void)
       credits_page = 0;
       in_credits = 0;
       in_menu = 1;
-      
-      music_iteration = 0;
-      music_play_got = 0;
-      
       while(in_menu)
       {
     		check_buttons();

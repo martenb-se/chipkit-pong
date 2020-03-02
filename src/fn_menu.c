@@ -32,6 +32,7 @@ char opt_diff_hard[] = "HARD";
 // char opt_diff_godmode[] = "GODMODE";
 
 
+// prints out text centered in the chosen section of the screen
 void menu_layout(char arr[], uint8_t len, uint8_t row, uint8_t sect)
 {
   uint8_t j, k, l, c;
@@ -136,16 +137,8 @@ void blink_selected(uint8_t row, uint8_t len)
   }
 }
 
-/*
-void blink_off_on(uint8_t blink_status, uint8_t len1, uint8_t len2, uint8_t row)
-{
-  if(blink_off_or_on == blink_status)
-    blink_selected(0, sizeof(opt_pad_size_large));
-  if(blink_off_or_on == blink_status)
-    menu_layout(opt_pad_size_medium, sizeof(opt_pad_size_medium), 0, 2);
-}
-*/
 
+// makes the selected option blink with help of a timer (writes and removes every second time)
 void blink_function(void)
 {
   if(option_row == 1 && cur_option_pad == 0)
@@ -291,7 +284,8 @@ void options_menu(void)
     {
     	if(sound_on == 1)
 				play_sound(200, 50, 1);
-				
+
+      // increments each individual option to save what it was previously
       if(option_row == 1)
         cur_option_pad++;
       if(option_row == 2)
@@ -366,6 +360,7 @@ void options_menu(void)
 }
 
 
+// draws an arrow on the screen and turns it off on the location it was previously
 void menu_select(uint8_t row1, uint8_t row2, uint8_t col1, uint8_t col2)
 {
   uint8_t k;
@@ -420,11 +415,11 @@ void menu_select(uint8_t row1, uint8_t row2, uint8_t col1, uint8_t col2)
 }
 
 
+// enter a mode depending what option is selected in the main menu
 void select_option(void)
 {
-  if (controller_plugged &&
-  	(((controller_input_a >> 6) & 1)			             // if player left A is pressed
-    || ((controller_input_b >> 6) & 1)))			           // if player right A is pressed
+  if (((controller_input_a >> 6) & 1)			             // if player left A is pressed
+    || ((controller_input_b >> 6) & 1))			           // if player right A is pressed
   {
   	if(selected_option == 0)                           // if arrow points to 1-player mode
     {
@@ -491,16 +486,11 @@ void select_option(void)
       options_menu();
       while(1)
         quicksleep(10);
-      //check_buttons();          // probably not needed
     }
 
     if(selected_option == 3)                          // if arrow points to credits
     {
       screen_clear();
-      
-      if(sound_on == 1)
-      	music_play_got = 1;
-      
       in_credits = 1;
       vertical_scrolling_credits();
       while(1)
@@ -510,11 +500,11 @@ void select_option(void)
 }
 
 
+// checks when select is pressed and released and moves an arrow around between the different options
 void check_buttons(void)
 {
-  if (controller_plugged &&
-  	(((controller_input_a >> 4) & 1)			          // if player left SELECT is pressed
-  	|| ((controller_input_b >> 4) & 1)))			        // if player right SELECT is pressed
+  if (((controller_input_a >> 4) & 1)			          // if player left SELECT is pressed
+  	|| ((controller_input_b >> 4) & 1))			        // if player right SELECT is pressed
   {
     button_press = 1;
     while(button_press == 1)
@@ -541,437 +531,3 @@ void check_buttons(void)
   if(selected_option == 3)
     menu_select(3, 2, 62, 0);   // CRED
 }
-
-/*
-void blink_select(uint8_t row, uint8_t len1, uint8_t len2)
-{
-  uint8_t i, k, l;
-  l = (128 - (len1*8 + len2*8)) / 3;
-
-  DISPLAY_CHANGE_TO_COMMAND_MODE;
-  spi_send_recv(0x22);
-  spi_send_recv(row);
-  spi_send_recv(0x0);
-  spi_send_recv(0x21);
-  spi_send_recv(l + len1*8);
-  spi_send_recv(127);
-  DISPLAY_CHANGE_TO_DATA_MODE;
-  for(i = 0; i < (127 - (l + len1*8)); i++)
-  {
-    for(k = 0; k < 8; k++)
-      spi_send_recv(font[(0 + k)]);
-  }
-  quicksleep(2000000);
-}
-*/
-
-/*
-void menu_arrow_select(uint8_t row, uint8_t col1, uint8_t col2, uint8_t col3)
-{
-  uint8_t i, j, k, c;
-
-  row = prev_row;
-  col = prev_col;
-
-
-
-  static uint8_t count = 0;
-  static uint8_t col = 16;
-  uint8_t prev_col = 36;
-  prev_row = 3;
-  row = 2;
-  c = 0;
-
-  for(i = 0; i < 2; i++)
-  {
-    if(prev_row == 3)
-
-    // points arrow to 1P
-    DISPLAY_CHANGE_TO_COMMAND_MODE;
-    spi_send_recv(0x22);
-    spi_send_recv(row);
-    spi_send_recv(0x0);
-    spi_send_recv(0x21);
-    spi_send_recv(col);
-    spi_send_recv(col + 8);
-    DISPLAY_CHANGE_TO_DATA_MODE;
-    for(k = 0; k < 8; k++)
-      spi_send_recv(font[(c*8 + k)]);
-
-
-    count++;
-    if(count == 1)
-    {
-      row = 3;
-    }
-    c = 0;
-
-  }
-
-  row = 2;
-  col = col + 24;
-  count++;
-
-
-}
-
-void menu_select_1p(void)
-{
-  uint8_t k;
-
-  // points arrow to 1P
-  DISPLAY_CHANGE_TO_COMMAND_MODE;
-  spi_send_recv(0x22);
-  spi_send_recv(2);
-  spi_send_recv(0x0);
-  spi_send_recv(0x21);
-  spi_send_recv(16);
-  spi_send_recv(24);
-  DISPLAY_CHANGE_TO_DATA_MODE;
-  for(k = 0; k < 8; k++)
-    spi_send_recv(font[(1*8 + k)]);
-
-  // turns off arrow to 2P
-  DISPLAY_CHANGE_TO_COMMAND_MODE;
-  spi_send_recv(0x22);
-  spi_send_recv(2);
-  spi_send_recv(0x0);
-  spi_send_recv(0x21);
-  spi_send_recv(64);
-  spi_send_recv(72);
-  DISPLAY_CHANGE_TO_DATA_MODE;
-  for(k = 0; k < 8; k++)
-    spi_send_recv(font[(0 + k)]);
-
-  // turns off arrow to OPT
-  DISPLAY_CHANGE_TO_COMMAND_MODE;
-  spi_send_recv(0x22);
-  spi_send_recv(3);
-  spi_send_recv(0x0);
-  spi_send_recv(0x21);
-  spi_send_recv(36);
-  spi_send_recv(46);
-  DISPLAY_CHANGE_TO_DATA_MODE;
-  for(k = 0; k < 8; k++)
-    spi_send_recv(font[(0 + k)]);
-}
-
-void menu_select_2p(void)
-{
-  uint8_t k;
-
-  // points arrow to 2P
-  DISPLAY_CHANGE_TO_COMMAND_MODE;
-  spi_send_recv(0x22);
-  spi_send_recv(2);
-  spi_send_recv(0x0);
-  spi_send_recv(0x21);
-  spi_send_recv(64);
-  spi_send_recv(72);
-  DISPLAY_CHANGE_TO_DATA_MODE;
-  for(k = 0; k < 8; k++)
-    spi_send_recv(font[(1*8 + k)]);
-
-  // turns off arrow to P1
-  DISPLAY_CHANGE_TO_COMMAND_MODE;
-  spi_send_recv(0x22);
-  spi_send_recv(2);
-  spi_send_recv(0x0);
-  spi_send_recv(0x21);
-  spi_send_recv(16);
-  spi_send_recv(24);
-  DISPLAY_CHANGE_TO_DATA_MODE;
-  for(k = 0; k < 8; k++)
-    spi_send_recv(font[(0 + k)]);
-
-  // turns off arrow to OPT
-  DISPLAY_CHANGE_TO_COMMAND_MODE;
-  spi_send_recv(0x22);
-  spi_send_recv(3);
-  spi_send_recv(0x0);
-  spi_send_recv(0x21);
-  spi_send_recv(36);
-  spi_send_recv(46);
-  DISPLAY_CHANGE_TO_DATA_MODE;
-  for(k = 0; k < 8; k++)
-    spi_send_recv(font[(0 + k)]);
-}
-
-void menu_select_opt(void)
-{
-  uint8_t k;
-
-  // points arrow to OPT
-  DISPLAY_CHANGE_TO_COMMAND_MODE;
-  spi_send_recv(0x22);
-  spi_send_recv(3);
-  spi_send_recv(0x0);
-  spi_send_recv(0x21);
-  spi_send_recv(36);
-  spi_send_recv(46);
-  DISPLAY_CHANGE_TO_DATA_MODE;
-  for(k = 0; k < 8; k++)
-    spi_send_recv(font[(1*8 + k)]);
-
-  // turns off arrow to P1
-  DISPLAY_CHANGE_TO_COMMAND_MODE;
-  spi_send_recv(0x22);
-  spi_send_recv(2);
-  spi_send_recv(0x0);
-  spi_send_recv(0x21);
-  spi_send_recv(16);
-  spi_send_recv(24);
-  DISPLAY_CHANGE_TO_DATA_MODE;
-  for(k = 0; k < 8; k++)
-    spi_send_recv(font[(0 + k)]);
-
-  // turns off arrow to 2P
-  DISPLAY_CHANGE_TO_COMMAND_MODE;
-  spi_send_recv(0x22);
-  spi_send_recv(2);
-  spi_send_recv(0x0);
-  spi_send_recv(0x21);
-  spi_send_recv(64);
-  spi_send_recv(72);
-  DISPLAY_CHANGE_TO_DATA_MODE;
-  for(k = 0; k < 8; k++)
-    spi_send_recv(font[(0 + k)]);
-}
-*/
-
-/*
-  option_row = 0;
-  in_options = 1;
-
-  while(option_row == 0)
-  {
-    option_loop = 0;
-    while(option_loop == 0)                                                             // while pad size is selected
-    {
-      options_menu_two(opt_pad_size, opt_pad_size_medium, 0, sizeof(opt_pad_size), sizeof(opt_pad_size_medium));
-      quicksleep(2000000);
-      blink_select(0, sizeof(opt_pad_size), sizeof(opt_pad_size_medium));                    // first option blinking (opt_pad_size_medium)
-      if (((controller_input_a >> 4) & 1)                                               // if SELECT is pressed
-      || ((controller_input_b >> 4) & 1))			                                          // if SELECT is pressed
-      {
-        while(option_loop == 0)
-        {
-          options_menu_two(opt_pad_size, opt_pad_size_large, 0, sizeof(opt_pad_size), sizeof(opt_pad_size_large));
-          quicksleep(2000000);
-          blink_select(0, sizeof(opt_pad_size), sizeof(opt_pad_size_large));
-          if (((controller_input_a >> 4) & 1)
-          || ((controller_input_b >> 4) & 1))
-          {
-            while(option_loop == 0)
-            {
-              options_menu_two(opt_pad_size, opt_pad_size_small, 0, sizeof(opt_pad_size), sizeof(opt_pad_size_small));
-              quicksleep(2000000);
-              blink_select(0, sizeof(opt_pad_size), sizeof(opt_pad_size_small));
-              if (((controller_input_a >> 4) & 1)
-              || ((controller_input_b >> 4) & 1))
-              {
-                option_loop = 1;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-
-    while(option_row == 1)
-    {
-      option_loop = 0;
-      while(option_loop == 0)
-      {
-        options_menu_two(ball_size, ball_size_2x2, 1, sizeof(ball_size), sizeof(ball_size_2x2));
-        quicksleep(2000000);
-        blink_select(1, sizeof(ball_size), sizeof(ball_size_2x2));
-        if (((controller_input_a >> 4) & 1)
-        || ((controller_input_b >> 4) & 1))
-        {
-          while(option_loop == 0)
-          {
-            options_menu_two(ball_size, ball_size_4x4, 1, sizeof(ball_size), sizeof(ball_size_4x4));
-            quicksleep(2000000);
-            blink_select(1, sizeof(ball_size), sizeof(ball_size_4x4));
-            if (((controller_input_a >> 4) & 1)
-            || ((controller_input_b >> 4) & 1))
-            {
-              while(option_loop == 0)
-              {
-                options_menu_two(ball_size, ball_size_6x6, 1, sizeof(ball_size), sizeof(ball_size_6x6));
-                quicksleep(2000000);
-                blink_select(1, sizeof(ball_size), sizeof(ball_size_6x6));
-                if (((controller_input_a >> 4) & 1)
-                || ((controller_input_b >> 4) & 1))
-                {
-                  option_loop = 1;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-    while(option_row == 2)
-    {
-      option_loop = 0;
-      while(option_loop == 0)
-      {
-        options_menu_two(opt_ball_speed, opt_diff_normal, 1, sizeof(opt_ball_speed), sizeof(opt_diff_normal));
-        quicksleep(2000000);
-        blink_select(1, sizeof(opt_ball_speed), sizeof(opt_diff_normal));
-        if (((controller_input_a >> 4) & 1)
-        || ((controller_input_b >> 4) & 1))
-        {
-          while(option_loop == 0)
-          {
-            options_menu_two(opt_ball_speed, opt_ball_speed_fast, 1, sizeof(opt_ball_speed), sizeof(opt_ball_speed_fast));
-            quicksleep(2000000);
-            blink_select(1, sizeof(opt_ball_speed), sizeof(opt_ball_speed_fast));
-            if (((controller_input_a >> 4) & 1)
-            || ((controller_input_b >> 4) & 1))
-            {
-              while(option_loop == 0)
-              {
-                options_menu_two(opt_ball_speed, opt_ball_speed_slow, 1, sizeof(opt_ball_speed), sizeof(opt_ball_speed_slow));
-                quicksleep(2000000);
-                blink_select(1, sizeof(opt_ball_speed), sizeof(opt_ball_speed_slow));
-                if (((controller_input_a >> 4) & 1)
-                || ((controller_input_b >> 4) & 1))
-                {
-                  option_loop = 1;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-    while(option_row == 3)
-    {
-      option_loop = 0;
-      while(option_loop == 0)
-      {
-        options_menu_two(opt_game_difficulty, opt_diff_normal, 1, sizeof(opt_game_difficulty), sizeof(opt_diff_normal));
-        quicksleep(2000000);
-        blink_select(1, sizeof(opt_game_difficulty), sizeof(opt_diff_normal));
-        if (((controller_input_a >> 4) & 1)
-        || ((controller_input_b >> 4) & 1))
-        {
-          while(option_loop == 0)
-          {
-            options_menu_two(opt_game_difficulty, opt_diff_hard, 1, sizeof(opt_game_difficulty), sizeof(opt_diff_hard));
-            quicksleep(2000000);
-            blink_select(1, sizeof(opt_game_difficulty), sizeof(opt_diff_hard));
-            if (((controller_input_a >> 4) & 1)
-            || ((controller_input_b >> 4) & 1))
-            {
-              while(option_loop == 0)
-              {
-                options_menu_two(opt_game_difficulty, opt_diff_godmode, 1, sizeof(opt_game_difficulty), sizeof(opt_diff_godmode));
-                quicksleep(2000000);
-                blink_select(1, sizeof(opt_game_difficulty), sizeof(opt_diff_godmode));
-                if (((controller_input_a >> 4) & 1)
-                || ((controller_input_b >> 4) & 1))
-                {
-                  while(option_loop == 0)
-                  {
-                    options_menu_two(opt_game_difficulty, opt_diff_easy, 1, sizeof(opt_game_difficulty), sizeof(opt_diff_easy));
-                    quicksleep(2000000);
-                    blink_select(1, sizeof(opt_game_difficulty), sizeof(opt_diff_easy));
-                    if (((controller_input_a >> 4) & 1)
-                    || ((controller_input_b >> 4) & 1))
-                    {
-                      option_loop = 1;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-
-    if (((controller_input_a >> 5) & 1)			     // if player left B is pressed
-  	|| ((controller_input_b >> 5) & 1))			     // if player right B is pressed
-    {
-      screen_clear();
-      in_options = 0;
-      in_menu = 1;
-      while(in_menu)
-      {
-        start_menu();
-    		select_option();
-    		check_buttons();
-      }
-    }
-}
-*/
-
-/*
-void options_menu_one(char arr[], uint8_t row, uint8_t len)
-{
-  uint8_t j, k, l, c;
-  l = (128 - len*8) / 2;
-
-  DISPLAY_CHANGE_TO_COMMAND_MODE;
-  spi_send_recv(0x22);
-  spi_send_recv(row);
-  spi_send_recv(0x0);
-  spi_send_recv(0x21);
-  spi_send_recv(l);
-  spi_send_recv(l + len*8 - 1);
-  DISPLAY_CHANGE_TO_DATA_MODE;
-  for(j = 0; j < len; j++)
-  {
-    c = arr[j];
-    for(k = 0; k < 8; k++)
-      spi_send_recv(font[(c*8 + k)]);
-  }
-}
-
-void options_menu_two(char arr1[], char arr2[], uint8_t row, uint8_t len1, uint8_t len2)
-{
-  uint8_t j, k, l, c;
-  l = (128 - (len1*8 + len2*8)) / 3;
-
-  // print array 1
-  DISPLAY_CHANGE_TO_COMMAND_MODE;
-  spi_send_recv(0x22);
-  spi_send_recv(row);
-  spi_send_recv(0x0);
-  spi_send_recv(0x21);
-  spi_send_recv(l);
-  spi_send_recv(l + len1*8);
-  DISPLAY_CHANGE_TO_DATA_MODE;
-  for(j = 0; j < len1; j++)
-  {
-    c = arr1[j];
-    for(k = 0; k < 8; k++)
-      spi_send_recv(font[(c*8 + k)]);
-  }
-
-  // print array 2
-  DISPLAY_CHANGE_TO_COMMAND_MODE;
-  spi_send_recv(0x22);
-  spi_send_recv(row);
-  spi_send_recv(0x0);
-  spi_send_recv(0x21);
-  spi_send_recv(l + len1*8 + l);
-  spi_send_recv(l + len1*8 + l + len2*8);
-  DISPLAY_CHANGE_TO_DATA_MODE;
-  for(j = 0; j < len2; j++)
-  {
-    c = arr2[j];
-    for(k = 0; k < 8; k++)
-      spi_send_recv(font[(c*8 + k)]);
-  }
-}
-*/
